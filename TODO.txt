@@ -1,0 +1,26 @@
+
+- login with username/password in master configfile
+- form for specifying service name, machine it runs on, how often it is
+  expected to check in, etc.
+- creates a curl command to put at the end of periodic scripts
+
+    curl 
+        -A "heartbeat/$(hostname)" \
+        -F "name=mendel.mikeboers.com backup" \
+        -F "job=filesystem rsync" \
+        -F "period=24h" \
+        -F "allow=mendel.mikeboers.com" \
+        -F "nonce=0123456789abcdef" \
+        -F "signature=0123456789abcdef" \
+        http://heartbeat.mikeboers.com/api/beat
+
+- return_code is special and flags that it failed if != 0
+- anything extra POSTed is remembered and displayed to the user
+
+- what fields are required:
+    name
+    subname (allows for several things to contribute to one "job"; optional)
+    period (how often we expect to see this; in minutes)
+    allow (ips or hostnames to allow from; allows pattern matching; optional)
+    nonce
+    signature (hmac of urlencode(sorted(data.iteritems())) with secret_key)
