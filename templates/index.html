@@ -1,0 +1,10 @@
+<h1>{{ beats | length }} Beats</h1>
+<ul>
+    {% for beat in beats %}
+    <li>
+        {{ beat.time }}: {{ beat.name }}
+    </li>
+    {% endfor %}
+</ul>
+
+
