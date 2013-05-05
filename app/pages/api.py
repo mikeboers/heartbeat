@@ -6,10 +6,14 @@ from ..main import app, db
 from ..beat import Beat
 
 
-@app.route('/api/beat')
+@app.route('/api/beat', methods=('POST', ))
 def handle_beat():
 
-    beat = Beat(name='testing', time=datetime.datetime.utcnow())
+    beat = Beat(
+        name=request.form.get('name', ''),
+        time=datetime.datetime.utcnow(),
+        remote_addr=request.remote_addr,
+    )
     db.session.add(beat)
     db.session.commit()
 

@@ -2,9 +2,11 @@
 <ul>
     {% for beat in beats %}
     <li>
-        {{ beat.time }}: {{ beat.name }}
+        {{ beat.time }}: <strong>{{ beat.name }}</strong> from <em>{{ beat.remote_addr }}</em>
     </li>
     {% endfor %}
 </ul>
+
+<input type="text" style="width: 80%;" value="curl -F 'name=Example' {{ request.url_root }}api/beat" />
 
 
