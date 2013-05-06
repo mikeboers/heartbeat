@@ -22,7 +22,7 @@
             <td><!-- status -->
             <td>Name
             <td>Time
-            <td>Remote Host
+            <td>Origin
             <td>Actions
         <tbody>
         {% for beat in beats %}
@@ -32,8 +32,10 @@
                 <span class="label label-success">ok</span>
 
             <td><strong>{{ beat.name }}
-            <td>{{ beat.time | datetimeformat }}
-            <td><em>{{ beat.remote_name }} ({{ beat.remote_addr }})
+            <td>{{ beat.time | timedeltaformat }}<br/>
+                <small>{{ beat.time | datetimeformat('d MMMM, yyyy h:mm a z') }}</small>
+            <td>{{ beat.remote_name }}<br/>
+                <small>{{ beat.remote_addr }}</small>
 
             <td>
                 <a class="btn btn-mini btn-danger" disabled><i class="icon-trash icon-white"></i> Delete</a>
