@@ -1,5 +1,15 @@
+NEXT
+----
 
+- bootstrap from CDN
 - login with username/password in master configfile
+- sign the `curl` URLs
+    - for now can just include a v=1 along with a nonce, and sign that
+    - can ban nonces in the future if they are problematic
+
+
+IDEAS
+-----
 - form for specifying service name, machine it runs on, how often it is
   expected to check in, etc.
 - creates a curl command to put at the end of periodic scripts

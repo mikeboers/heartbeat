@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+echo my precompile: pwd="$(pwd)"
+
+export GEM_HOME="$(pwd)"
+export GEM_PATH=""
+
+# gem install sass
