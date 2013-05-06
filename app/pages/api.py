@@ -1,4 +1,5 @@
 import datetime
+import socket
 
 from flask import request
 
@@ -18,6 +19,7 @@ def handle_beat():
         name=request.form.get('name', ''),
         time=datetime.datetime.utcnow(),
         remote_addr=remote_addr,
+        remote_name=socket.gethostbyaddr(remote_addr)[0],
     )
     db.session.add(beat)
     db.session.commit()
