@@ -12,8 +12,8 @@ from flask.ext.babel import Babel
 from flask.ext.sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
-app.root_path = os.path.abspath(os.path.join(__file__, '..', '..'))
 app.config.from_object('app.config')
+app.root_path = app.config['ROOT_PATH']
 
 
 babel = Babel(app)
@@ -21,9 +21,9 @@ db = SQLAlchemy(app)
 
 
 # Register models.
-from . import beat
-
-db.create_all()
+from . import service
+from . import heartbeat
+from . import agent
 
 
 # Register routes.

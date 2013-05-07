@@ -1,11 +1,10 @@
 import time
 import sys
 
+
 def main():
     while True:
-        print 'BEAT'
-        sys.stdout.flush()
-        time.sleep(10)
+        time.sleep(60)
 
 
 if __name__ == '__main__':
