@@ -1,0 +1,25 @@
+<!doctype html>
+
+<head>
+    {% block head %}
+    <title>{{ request.host }}</title>
+    <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css" rel="stylesheet">
+    {% endblock %}
+
+<body>
+<div class="container"><div class="row">
+
+<h1>{{ request.host }}</h1>
+
+{% if config.get('SQLALCHEMY_DATABASE_URI')  == 'sqlite://' %}
+    <div class="alert">
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+      <strong>Warning!</strong> This instance is using the testing database; your data is not permanent.
+    </div>
+{% endif %}
+
+{% block body %}{% endblock %}
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/js/bootstrap.min.js"></script>
+

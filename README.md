@@ -12,6 +12,8 @@ WORKER=worker-heartbeat-$(whoami)
 # Create a Heroku app for the web server.
 heroku create --remote server $WEB
 heroku create --remote worker $WORKER
+heroku labs:enable user-env-compile -a $WEB
+heroku labs:enable user-env-compile -a $WORKER
 
 # Provision the database
 heroku addons:add heroku-postgresql:dev --app=$WEB

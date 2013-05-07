@@ -1,0 +1,21 @@
+
+<tr>
+    <td>
+        <!-- TODO: add some logic here -->
+        <span class="label label-success">ok</span>
+    <td>
+        {% if component %}
+            <strong><a href="{{ url_for('get_component', service=service.name, component=component.name) }}">{{ component.name }}</a></strong><br />
+            <small>{{ component.heartbeats | length }} beats</small>
+        {% elif service %}
+            <strong><a href="{{ url_for('get_service', name=service.name) }}">{{ service.name }}</a></strong><br />
+            <small>{{ service.components | length }} components</small>
+        {% else %}
+            <strong>{{ heartbeat.component.name }}</strong>
+        {% endif %}
+    <td>{{ heartbeat.time | timedeltaformat }}<br/>
+        <small>{{ heartbeat.time | datetimeformat('d MMMM, yyyy h:mm:ss a z') }}</small>
+    <td>{{ heartbeat.remote_name }}<br/>
+        <small>{{ heartbeat.remote_addr }}</small>
+    <td>
+        <a class="btn btn-mini btn-danger" disabled><i class="icon-trash icon-white"></i> Delete</a>
