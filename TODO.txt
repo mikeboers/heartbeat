@@ -1,17 +1,32 @@
 NEXT
 ----
 
-- simplify heavily; flat Service namespace (i.e. no Component)
-    - still have individual heartbeats
+- add http_code, return_code, and description to HeartBeat
+
+- inline editable cron_spec and url_to_monitor
+
 
 - pull "cron_spec" from api calls
-    - allow r'^(\d+)([hmsdw])$' -> 24hr, 1hr, 30m
+    - allow r'^(\d+)([hmsdw])$' -> 24h, 1h, 30m, 180s, 7d
 
 - worker should:
     - awake every minute and check what it is supposed to check (use cron syntax)
     - check statuses and send emails when we seem to be missing something
 
 - login with username/password in master configfile
+    - every endpoint except "heartbeat_api" should be forced to be authed
+    - OR accept any signed requests? Would need to include "_path" key in signature
+      and maybe a "_method" along with "_nonce".
+
+      def sign(data, path=None, method='POST'):
+            data = dict(data)
+            data['_path'] = request.path_info if path is None else path
+            data['_method'] = method
+            return hmac(key, '&'.join('%s=%s' % x for x in sorted(data.iteritems())))
+
+    @sig_includes('name') decorator to specify that the other parameters can
+     vary
+
 - sign the `curl` URLs
     - for now can just include a v=1 along with a nonce, and sign that
     - can ban nonces in the future if they are problematic

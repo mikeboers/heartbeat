@@ -1,5 +1,5 @@
 from .main import db
-from .service import Component
+from .service import Service
 
 
 class Heartbeat(db.Model):
@@ -8,9 +8,7 @@ class Heartbeat(db.Model):
         autoload_with=db.engine,
     )
 
-    component = db.relationship(Component,
-        backref=db.backref('heartbeats', order_by=__table__.c.time.desc()),
-    )
+    service = db.relationship(Service, backref='heartbeats')
 
 
 

@@ -1,0 +1,42 @@
+{% extends "_main.html" %}
+{% block body %}
+
+<h3>
+    <a href="/">Services</a> &raquo;
+    {{ service.name }}
+</h3>
+
+<table class="table table-striped table-hover">
+    <thead><tr>
+        <td><!-- status -->
+        <td>Name
+        <td>Time
+        <td>Origin
+        <td>Actions
+    <tbody>
+    {% for heartbeat in service.heartbeats %}
+        {% include "_heartbeat_tr.html" %}
+    {% endfor %}
+
+    {% if not service.heartbeats %}
+    <tr>
+        <td>&nbsp;
+        <td colspan="4"><em>No heartbeats.</em>
+    {% endif %}
+
+</table>
+
+
+<h3>Script Integration</h3>
+<p>Copy the following command into the end of your script to create
+   a heartbeat here.
+</p>
+<input id="curl" class="input-block-level" type="text" value='curl -F"name={{ service.name }}" {{ request.url_root }}api/beat' />
+
+<script>
+    $("#curl").click(function() {
+       $(this).select();
+    });
+</script>
+
+{% endblock %}

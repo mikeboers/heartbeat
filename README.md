@@ -9,15 +9,15 @@ cd heartbeat
 WEB=web-heartbeat-$(whoami)
 WORKER=worker-heartbeat-$(whoami)
 
-# Create a Heroku app for the web server.
+# Create a Heroku app for the web server and worker (sorry Heroku).
 heroku create --remote server $WEB
 heroku create --remote worker $WORKER
-heroku labs:enable user-env-compile -a $WEB
-heroku labs:enable user-env-compile -a $WORKER
+heroku labs:enable user-env-compile --app=$WEB
+heroku labs:enable user-env-compile --app=$WORKER
 
 # Provision the database
 heroku addons:add heroku-postgresql:dev --app=$WEB
-DATABASE_URL=$(heroku config --shell --app=$WEB | grep HEROKU_POSTGRES | cut -d= -f2)
+DATABASE_URL=$(heroku config --shell --app=$WEB | grep HEROKU_POSTGRES | cut -d= -f2-)
 heroku config:set "DATABASE_URL=$DATABASE_URL" --app=$WEB
 heroku config:set "DATABASE_URL=$DATABASE_URL" --app=$WORKER
 

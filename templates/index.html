@@ -12,12 +12,15 @@
         <td>Actions
     <tbody>
     {% for service in services %}
-        {% set heartbeat = service.components[0].heartbeats[0] %}
-        {% include "_heartbeat_tr.html" %}
+        {% if service.heartbeats %}
+            {% set heartbeat = service.last_beat %}
+            {% set heartbeat_link = url_for('service_details', name=service.name) %}
+            {% include "_heartbeat_tr.html" %}
+        {% endif %}
     {% endfor %}
     <tr>
         <td>&nbsp;
-        <td colspan="4"><form class="form-inline" method="POST" action="{{ url_for('post_create_service') }}">
+        <td colspan="4"><form class="form-inline" method="POST" action="{{ url_for('create_service_api') }}">
             <input type="text" name="name" />
             <input type="submit" class="btn btn-primary" value="Create" />
         </form>

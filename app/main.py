@@ -23,7 +23,6 @@ db = SQLAlchemy(app)
 # Register models.
 from . import service
 from . import heartbeat
-from . import agent
 
 
 # Register routes.
