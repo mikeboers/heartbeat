@@ -14,3 +14,5 @@ else:
     TEMPORARY_DATABASE_URI = 'sqlite:///%s' % os.path.join(ROOT_PATH, 'var', 'sqlite', 'main.sqlite')
 
 SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL', TEMPORARY_DATABASE_URI)
+
+HEARTBEATS_PER_SERVICE = 10

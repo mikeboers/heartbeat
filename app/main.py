@@ -3,7 +3,7 @@ import os
 import sys
 
 
-FORMAT = '%(asctime)-15s %(message)s'
+FORMAT = '%(message)s'
 logging.basicConfig(format=FORMAT, level=logging.DEBUG)
 
 

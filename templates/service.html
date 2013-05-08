@@ -2,7 +2,7 @@
 {% block body %}
 
 <h2>
-    {{ service.name }}
+    <a href="/">Services</a> &raquo; {{ service.name }}
 </h2>
 
 <p>
@@ -12,8 +12,8 @@
     </span></code>
     {% if service.cron_spec %}
         <br/>
-        {% set cron_iter = service.cron_iter %}
-        <small>Next hearbeats: {% for i in range(5) %}{% if i %},{% endif%}
+        {% set cron_iter = service.cron_iter() %}
+        <small>Next heartbeats: {% for i in range(5) %}{% if i %},{% endif%}
             {{ cron_iter.get_next() | utcfromtimestamp | timedeltaformat }}{% endfor %}</small>
     {% endif %}
 
@@ -33,7 +33,7 @@
         <td>Origin
         <td>Actions
     <tbody>
-    {% for heartbeat in service.heartbeats %}
+    {% for heartbeat in service.heartbeats | sort(attribute="time", reverse=True) %}
         {% include "_heartbeat_tr.html" %}
     {% endfor %}
 

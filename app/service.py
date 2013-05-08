@@ -1,4 +1,6 @@
 from datetime import datetime
+import calendar
+import time
 
 from croniter import croniter
 
@@ -22,13 +24,14 @@ class Service(db.Model):
         beat = self.last_beat
         return beat and beat.time
 
-    @property
-    def cron_iter(self):
-        return self.cron_spec and croniter(self.cron_spec)
+    def cron_iter(self, start=None):
+        if isinstance(start, datetime):
+            start = calendar.timegm(start.timetuple())
+        return self.cron_spec and croniter(self.cron_spec, start or time.time())
 
     @property
     def next_expected_time(self):
-        iter_ = self.cron_iter
+        iter_ = self.cron_iter()
         return iter_ and datetime.utcfromtimestamp(iter_.get_next())
 
 

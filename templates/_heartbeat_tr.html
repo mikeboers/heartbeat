@@ -1,8 +1,9 @@
 
 <tr>
     <td>
-        <!-- TODO: add some logic here -->
-        <span class="label label-success">ok</span>
+        {% for content, type_ in heartbeat.labels() %}
+            <span class="label label-{{ type_ }}">{{ content }}</span>
+        {% endfor %}
     <td>
         {% if heartbeat_link %}<a href="{{ heartbeat_link }}">{% endif %}
         <strong>{{ heartbeat.service.name }}</strong>
