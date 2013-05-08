@@ -1,3 +1,7 @@
+from datetime import datetime
+
+from croniter import croniter
+
 from .main import db
 
 
@@ -17,5 +21,15 @@ class Service(db.Model):
     def last_time(self):
         beat = self.last_beat
         return beat and beat.time
+
+    @property
+    def cron_iter(self):
+        return self.cron_spec and croniter(self.cron_spec)
+
+    @property
+    def next_expected_time(self):
+        iter_ = self.cron_iter
+        return iter_ and datetime.utcfromtimestamp(iter_.get_next())
+
 
 

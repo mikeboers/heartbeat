@@ -1,7 +1,9 @@
 import datetime
 import logging
 import socket
+import re
 
+from croniter import croniter
 from flask import request, abort, redirect, url_for
 
 from ..main import app, db
@@ -43,7 +45,7 @@ def do_create_heartbeat():
     return 'ok\n'
 
 
-@app.route('/api/create_service', endpoint='create_service_api', methods=('POST', ))
+@app.route('/api/service/create', endpoint='create_service_api', methods=('POST', ))
 def do_create_service():
 
     name = request.form.get('name')
@@ -59,3 +61,40 @@ def do_create_service():
     return redirect(url_for('service_details', name=name))
 
 
+@app.route('/api/service/edit', endpoint='edit_service_api', methods=('POST', ))
+def do_edit_service():
+
+    try:
+        id_ = int(request.form['pk'])
+        field = request.form['name']
+        value = request.form['value']
+    except ValueError:
+        return 'malformed pk', 400
+    except KeyError as e:
+        return 'missing %s' % e.args[0], 400
+
+    service = db.session.query(Service).get(id_)
+    if not service:
+        return 'invalid pk', 400
+
+    if field == 'url_to_monitor':
+        if value and not re.match(r'^https?://[^/]+\.\w+($|/)', value):
+            return 'invalid value: must be like http(s)://example.com', 400
+        service.url_to_monitor = value or None
+
+    elif field == 'cron_spec':
+        if value:
+            value = value.strip()
+        if value:
+            try:
+                croniter(value)
+            except ValueError:
+                return 'invalid CRON spec', 400
+        service.cron_spec = value or None
+
+    else:
+        return 'invalid field', 400
+
+    db.session.commit()
+
+    return 'updated service[%d].%s' % (id_, field)

@@ -1,6 +1,10 @@
+import logging
 from datetime import datetime, timedelta
 
 from .main import app
+
+
+log = logging.getLogger(__name__)
 
 
 _plural_s = lambda n: 's' if n != 1 else ''
@@ -9,17 +13,29 @@ _plural_s = lambda n: 's' if n != 1 else ''
 @app.add_template_filter
 def timedeltaformat(delta):
 
-    if not isinstance(delta, timedelta):
-        delta = datetime.utcnow() - delta
+    if isinstance(delta, datetime):
+        delta = delta - datetime.utcnow()
+    if isinstance(delta, timedelta):
+        delta = delta.days * 60 * 60 * 24 + delta.seconds
 
-    if delta.days:
-        return '%d day%s ago' % (delta.days, _plural_s(delta.days))
-    if delta.seconds > 3600:
-        hours = delta.seconds / 3600
-        return '%d hour%s ago' % (hours, _plural_s(hours))
-    if delta.seconds > 60:
-        minutes = delta.seconds / 60
-        return '%d minute%s ago' % (minutes, _plural_s(minutes))
+    future = delta >= 0
+    delta = int(abs(delta))
+    minutes, seconds = divmod(delta, 60)
+    hours, minutes = divmod(minutes, 60)
+    days, hours = divmod(hours, 24)
 
-    return '%d second%s ago' % (delta.seconds, _plural_s(delta.seconds))
+    for value, unit in [
+        (days, 'day'),
+        (hours, 'hour'),
+        (minutes, 'minute'),
+        (seconds, 'second'),
+    ]:
+        if value:
+            return '%d %s%s %s' % (
+                value, unit, _plural_s(value), '' if future else 'ago',
+            )
+    return 'now'
 
+
+app.add_template_filter(datetime.utcfromtimestamp)
+app.add_template_filter(datetime.fromtimestamp)

@@ -4,12 +4,16 @@
     {% block head %}
     <title>{{ request.host }}</title>
     <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css" rel="stylesheet">
+    <link href="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.4.4/bootstrap-editable/css/bootstrap-editable.css" rel="stylesheet">
     {% endblock %}
 
 <body>
 <div class="container"><div class="row">
 
-<h1>{{ request.host }}</h1>
+
+<h1>
+    {{ request.host }}
+</h1>
 
 {% if config.get('SQLALCHEMY_DATABASE_URI')  == 'sqlite://' %}
     <div class="alert">
@@ -19,7 +23,8 @@
 {% endif %}
 
 {% block body %}{% endblock %}
-
+{% block scripts %}
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/js/bootstrap.min.js"></script>
-
+<script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.4.4/bootstrap-editable/js/bootstrap-editable.min.js"></script>
+{% endblock %}
