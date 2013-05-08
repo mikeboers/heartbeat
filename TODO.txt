@@ -1,23 +1,20 @@
 NEXT
 ----
 
-- pull migrations from mikeboers.com
+- simplify heavily; flat Service namespace (i.e. no Component)
+    - still have individual heartbeats
+
+- pull "cron_spec" from api calls
+    - allow r'^(\d+)([hmsdw])$' -> 24hr, 1hr, 30m
 
 - worker should:
     - awake every minute and check what it is supposed to check (use cron syntax)
     - check statuses and send emails when we seem to be missing something
 
-- db heirarchy with Service, Component, and Heartbeat
-    - Agent for active probes
-
-- do we want to have to predefine services, or should the curl/api commands be
-  fully self describing?
-
 - login with username/password in master configfile
 - sign the `curl` URLs
     - for now can just include a v=1 along with a nonce, and sign that
     - can ban nonces in the future if they are problematic
-- database from HEROKU_POSTGRESQL_CRIMSON_URL 
 
 
 IDEAS

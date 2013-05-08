@@ -1,4 +1,9 @@
+import datetime
+
 from .main import db
+
+
+epoch = datetime.datetime(1970, 1, 1)
 
 
 class Service(db.Model):
@@ -6,6 +11,12 @@ class Service(db.Model):
         autoload=True,
         autoload_with=db.engine,
     )
+
+    @property
+    def latest_time(self):
+        if not self.components:
+            return epoch
+        return max(self.components, key=lambda c: c.latest_time).latest_time
 
 
 class Component(db.Model):
@@ -15,6 +26,12 @@ class Component(db.Model):
     )
 
     service = db.relationship(Service, backref="components")
+
+    @property
+    def latest_time(self):
+        if not self.heartbeats:
+            return epoch
+        return max(self.heartbeats, key=lambda h: h.time).time
 
 
 

@@ -23,7 +23,65 @@
         {% include "_heartbeat_tr.html" %}
     {% endfor %}
 
+    {% if not component.heartbeats %}
+    <tr>
+        <td>&nbsp;
+        <td colspan="4"><em>No heartbeats.</em>
+    {% endif %}
+
 </table>
+
+<h3>Agents</h3>
+<table class="table table-striped table-hover">
+    <thead><tr>
+        <td><!-- status -->
+        <td>Name
+        <td>Cron
+        <td>Type
+        <td>Job
+    <tbody>
+
+    {% if True %}
+    <tr>
+        <td>&nbsp;
+        <td colspan="4"><em>No agents.</em>
+    {% endif %}
+    
+</table>
+
+<h4>Create Web Agent</h4>
+<form class="form-horizontal" method="POST" action="{{ url_for('post_create_component') }}"><fieldset>
+    <input type="hidden" name="service_id" value="{{ service.id }}" />
+    
+    <div class="control-group">
+        <label class="control-label">Name</label>
+        <div class="controls">
+            <input type="text" name="name" />
+        </div>
+    </div>
+
+    <div class="control-group">
+        <label class="control-label">CRON Specification</label>
+        <div class="controls">
+            <input type="text" class="input-small" name="cron" value="1 * * * *" />
+        </div>
+    </div>
+
+    <div class="control-group">
+        <label class="control-label">URL to Check</label>
+        <div class="controls">
+            <input type="text" name="job" class="input-xlarge" placeholder="http://example.com/" />
+        </div>
+    </div>
+
+    <div class="control-group">
+        <div class="controls">
+            <button type="submit" class="btn">Create</button>
+        </div>
+    </div>
+
+</fieldset></form>
+
 
 
 <h3>Script Integration</h3>

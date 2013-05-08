@@ -14,24 +14,25 @@
         <td>Last Origin
         <td>Actions
     <tbody>
-    {% for component in service.components %}
+    {% for component in components %}
         {% set heartbeat = component.heartbeats[0] %}
         {% include "_heartbeat_tr.html" %}
     {% endfor %}
 
+    {% if not components %}
+    <tr>
+        <td>&nbsp;
+        <td colspan="4"><em>No components.</em>
+    {% endif %}
+
+    <tr>
+        <td>&nbsp;
+        <td colspan="4"><form class="form-inline" method="POST" action="{{ url_for('post_create_component') }}">
+            <input type="hidden" name="service_id" value="{{ service.id }}" />
+            <input type="text" name="name" />
+            <input type="submit" class="btn btn-primary" value="Create" />
+        </form>
+
 </table>
-
-
-<h3>Script Integration</h3>
-<p>Copy the following command into the end of your script to create
-   a heartbeat here.
-</p>
-<input id="curl" class="input-block-level" type="text" value='curl -F"service={{ service.name }}" -F"name=$(hostname)" {{ request.url_root }}api/beat' />
-
-<script>
-    $("#curl").click(function() {
-       $(this).select();
-    });
-</script>
 
 {% endblock %}

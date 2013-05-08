@@ -15,20 +15,14 @@
         {% set heartbeat = service.components[0].heartbeats[0] %}
         {% include "_heartbeat_tr.html" %}
     {% endfor %}
+    <tr>
+        <td>&nbsp;
+        <td colspan="4"><form class="form-inline" method="POST" action="{{ url_for('post_create_service') }}">
+            <input type="text" name="name" />
+            <input type="submit" class="btn btn-primary" value="Create" />
+        </form>
 
 </table>
 
-
-<h3>Script Integration</h3>
-<p>Copy the following command into the end of your script to create
-   a heartbeat here.
-</p>
-<input id="curl" class="input-block-level" type="text" value='curl -F"service=example" -F"name=$(hostname)" {{ request.url_root }}api/beat' />
-
-<script>
-    $("#curl").click(function() {
-       $(this).select();
-    });
-</script>
 
 {% endblock %}
