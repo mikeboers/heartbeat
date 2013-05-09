@@ -12,10 +12,17 @@
         <td>Actions
     <tbody>
     {% for service in services %}
+        {% set heartbeat_link = url_for('service_details', name=service.name) %}
         {% if service.heartbeats %}
             {% set heartbeat = service.last_beat %}
-            {% set heartbeat_link = url_for('service_details', name=service.name) %}
             {% include "_heartbeat_tr.html" %}
+        {% else %}
+            <tr class="heartbeat empty-service" {% if service.can_active_check %}data-service-active-check="1"{% endif %} data-service-id="{{ service.id }}">
+                <td>&nbsp;
+                <td><a href="{{ heartbeat_link }}"><strong>{{ service.name }}</strong></a>
+                <td><em>never</em>
+                <td><em>never</em>
+                <td class="heartbeat-actions">&nbsp;
         {% endif %}
     {% endfor %}
     <tr>
@@ -28,4 +35,35 @@
 </table>
 
 
+{% endblock %}
+{% block scripts %}
+    {{ super() }}
+    <script>
+
+        $('[data-service-active-check] .heartbeat-actions').each(function() {
+            $('<a class="service-check btn btn-mini"><i class="icon-ok"></i> Check Now</a>')
+                .appendTo(this);
+        });
+        $('.service-check').click(function() {
+            var $tr = $(this).closest('.heartbeat');
+            $.post({{ url_for('check_service_api') |tojson|safe }}, {
+                id: $tr.data('serviceId')
+            });
+        })
+
+        // Delete buttons
+        $('.heartbeat-actions').each(function() {
+            $('<a class="service-delete btn btn-mini btn-danger"><i class="icon-trash icon-white"></i> Delete</a>')
+                .appendTo(this);
+        });
+        $('.service-delete').click(function() {
+            var $tr = $(this).closest('.heartbeat');
+            $.post({{ url_for('delete_service_api') |tojson|safe }}, {
+                id: $tr.data('serviceId')
+            });
+            $tr.fadeOut();
+        });
+           
+
+    </script>
 {% endblock %}

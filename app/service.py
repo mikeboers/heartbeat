@@ -1,10 +1,14 @@
 from datetime import datetime
 import calendar
 import time
+import logging
 
 from croniter import croniter
+import requests
 
 from .main import db
+
+log = logging.getLogger(__name__)
 
 
 class Service(db.Model):
@@ -12,6 +16,33 @@ class Service(db.Model):
         autoload=True,
         autoload_with=db.engine,
     )
+
+    @property
+    def can_active_check(self):
+        return bool(self.url_to_monitor)
+
+    def active_check(self):
+        if self.url_to_monitor:
+            self._check_url()
+
+    def _check_url(self):
+
+        try:
+            req = requests.get(self.url_to_monitor)
+            status_code = req.status_code
+        except requests.exceptions.Timeout:
+            status_code = 604 # This is a custom code for a timeout.
+        
+        log.debug('"%s" returned %d' % (self.url_to_monitor, status_code))
+
+        beat = Heartbeat(
+            service=self,
+            time=datetime.utcnow(),
+            http_code=status_code,
+            remote_addr='127.0.0.1',
+            remote_name='localhost',
+        )
+        self.heartbeats.append(beat)
 
     @property
     def last_beat(self):
@@ -35,4 +66,6 @@ class Service(db.Model):
         return iter_ and datetime.utcfromtimestamp(iter_.get_next())
 
 
+# Hooray for circular imports!
+from .heartbeat import Heartbeat
 

@@ -7,7 +7,7 @@
 
 <p>
     <strong>CRON Specification:</strong>
-    <code><span data-pk="{{ service.id }}" data-name="cron_spec" data-title='E.g. "*/5 * * * *" for every 5 minutes'>
+    <code><span class="editable" data-pk="{{ service.id }}" data-name="cron_spec" data-title='E.g. "*/5 * * * *" for every 5 minutes'>
         {{ service.cron_spec or '' }}
     </span></code>
     {% if service.cron_spec %}
@@ -19,7 +19,7 @@
 
 <p>
     <strong>URL to Monitor:</strong>
-    <span data-pk="{{ service.id }}" data-name="url_to_monitor">
+    <span class="editable" data-pk="{{ service.id }}" data-name="url_to_monitor">
         {{ service.url_to_monitor or '' }}
     </span>
 
@@ -63,13 +63,27 @@
            $(this).select();
         });
 
-        $('[data-pk]').editable({
+        // Editable fields.
+        $('.editable').editable({
             placement: 'right',
             url: {{ url_for('edit_service_api') |tojson|safe }},
             success: function(response, value) {
                 console.log('response: ', response);
             }
         });
+
+        // Delete buttons
+        $('.heartbeat-actions').each(function() {
+            $('<a class="heartbeat-delete btn btn-mini btn-danger"><i class="icon-trash icon-white"></i> Delete</a>')
+                .appendTo(this);
+        });
+        $('.heartbeat-delete').click(function() {
+            var $tr = $(this).closest('.heartbeat');
+            $.post({{ url_for('delete_heartbeat_api') |tojson|safe }}, {
+                id: $tr.data('pk')
+            });
+            $tr.fadeOut();
+        })
 
     </script>
 {% endblock %}

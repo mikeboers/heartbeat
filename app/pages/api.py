@@ -45,6 +45,25 @@ def do_create_heartbeat():
     return 'ok\n'
 
 
+@app.route('/api/beat/delete', endpoint='delete_heartbeat_api', methods=('POST', ))
+def do_delete_heartbeat():
+
+    try:
+        id_ = int(request.form['id'])
+    except KeyError:
+        return 'missing id', 400
+    except ValueError:
+        return 'malformed id', 400
+
+    heartbeat = db.session.query(Heartbeat).get(id_)
+    if not heartbeat:
+        return 'no heartbeat %d' % (id_, ), 404
+
+    db.session.delete(heartbeat)
+    db.session.commit()
+    return 'deleted heartbeat %d' % (id_, ), 200
+
+
 @app.route('/api/service/create', endpoint='create_service_api', methods=('POST', ))
 def do_create_service():
 
@@ -98,3 +117,46 @@ def do_edit_service():
     db.session.commit()
 
     return 'updated service[%d].%s' % (id_, field)
+
+
+@app.route('/api/service/check', endpoint='check_service_api', methods=('POST', ))
+def do_check_service():
+
+    try:
+        id_ = int(request.form['id'])
+    except KeyError:
+        return 'missing id', 400
+    except ValueError:
+        return 'malformed id', 400
+
+    service = db.session.query(Service).get(id_)
+    if not service:
+        return 'invalid id', 400
+
+    if not service.can_active_check:
+        return 'service does not have active check', 412
+
+    service.active_check()
+    db.session.commit()
+    return 'ok\n'
+
+
+@app.route('/api/service/delete', endpoint='delete_service_api', methods=('POST', ))
+def do_delete_service():
+
+    try:
+        id_ = int(request.form['id'])
+    except KeyError:
+        return 'missing id', 400
+    except ValueError:
+        return 'malformed id', 400
+
+    service = db.session.query(Service).get(id_)
+    if not service:
+        return 'no service %d' % (id_, ), 404
+
+    db.session.delete(service)
+    db.session.commit()
+    return 'deleted service %d' % (id_, ), 200
+
+
