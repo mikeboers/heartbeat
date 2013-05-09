@@ -27,14 +27,32 @@
 <h3>Heartbeats</h3>
 <table class="table table-striped table-hover">
     <thead><tr>
-        <td><!-- status -->
-        <td>Name
+        <td>Status
         <td>Time
         <td>Origin
         <td>Actions
     <tbody>
     {% for heartbeat in service.heartbeats | sort(attribute="time", reverse=True) %}
-        {% include "_heartbeat_tr.html" %}
+
+
+        <tr class="heartbeat" data-pk="{{ heartbeat.id }}">
+            <td>
+                {% for content, type_ in heartbeat.labels() %}
+                    <span class="label label-{{ type_ }}">{{ content }}</span>
+                {% endfor %}
+
+            <td>
+                {{ heartbeat.time | timedeltaformat }}<br/>
+                <small>{{ heartbeat.time | datetimeformat('d MMMM, yyyy h:mm:ss a z') }}</small>
+            <td>
+
+                {{ heartbeat.remote_name }}<br/>
+                <small>{{ heartbeat.remote_addr }}</small>
+
+            <td class="heartbeat-actions">
+                &nbsp;
+
+
     {% endfor %}
 
     {% if not service.heartbeats %}
@@ -50,7 +68,7 @@
 <p>Copy the following command into the end of your script to create
    a heartbeat here.
 </p>
-<input id="curl" class="input-block-level" type="text" value='curl -F"name={{ service.name }}" {{ request.url_root }}api/beat' />
+<input id="curl" class="input-block-level" type="text" value='curl -Fname="{{ service.name }}" -Freturn_code="$?" {{ request.url_root }}api/beat' />
 
 
 {% endblock %}

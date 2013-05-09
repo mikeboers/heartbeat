@@ -24,7 +24,7 @@ def do_create_heartbeat():
 
     name = request.form.get('name')
     if not name:
-        abort(400)
+        return 'missing name', 400
 
     service = db.session.query(Service).filter(Service.name == name).first()
     if not service:
@@ -32,12 +32,19 @@ def do_create_heartbeat():
         service = Service(name=name)
         db.session.add(service)
 
+    return_code = request.form.get('return_code')
+    if return_code:
+        try:
+            return_code = int(return_code)
+        except ValueError:
+            return 'bad return_code', 400
 
     beat = Heartbeat(
         service=service,
         time=datetime.datetime.utcnow(),
         remote_addr=remote_addr,
         remote_name=socket.gethostbyaddr(remote_addr)[0],
+        return_code=return_code,
     )
     db.session.add(beat)
     db.session.commit()

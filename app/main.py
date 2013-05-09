@@ -11,6 +11,7 @@ from flask import Flask
 from flask.ext.babel import Babel
 from flask.ext.sqlalchemy import SQLAlchemy
 
+
 app = Flask(__name__)
 app.config.from_object('app.config')
 app.root_path = app.config['ROOT_PATH']
@@ -26,8 +27,9 @@ from . import heartbeat
 
 
 # Register routes.
-from .pages import api, dev, index
+from .pages import api, dev, main
 
+# Register view utilities.
 from . import viewutils
 
 

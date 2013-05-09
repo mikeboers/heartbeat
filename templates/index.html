@@ -5,25 +5,49 @@
 
 <table class="table table-striped table-hover">
     <thead><tr>
-        <td><!-- status -->
+        <td>Status
         <td>Name
         <td>Last Time
         <td>Last Origin
         <td>Actions
     <tbody>
     {% for service in services %}
-        {% set heartbeat_link = url_for('service_details', name=service.name) %}
-        {% if service.heartbeats %}
-            {% set heartbeat = service.last_beat %}
-            {% include "_heartbeat_tr.html" %}
-        {% else %}
-            <tr class="heartbeat empty-service" {% if service.can_active_check %}data-service-active-check="1"{% endif %} data-service-id="{{ service.id }}">
-                <td>&nbsp;
-                <td><a href="{{ heartbeat_link }}"><strong>{{ service.name }}</strong></a>
-                <td><em>never</em>
-                <td><em>never</em>
-                <td class="heartbeat-actions">&nbsp;
-        {% endif %}
+        <tr class="service"
+            data-pk="{{ service.id }}"
+            data-can-active-check="{{ 'true' if service.can_active_check else 'false' }}"
+            data-heartbeat-count="{{ service.heartbeats | length }}"
+        >
+            <td>
+                {% if service.heartbeats %}
+                    {% for content, type_ in service.last_beat.labels() %}
+                        <span class="label label-{{ type_ }}">{{ content }}</span>
+                    {% endfor %}
+                {% endif %}
+
+            <td>
+                <a href="{{ url_for('service_details', name=service.name) }}">
+                    <strong>{{ service.name }}</strong>
+                </a>
+
+            <td>
+                {% if service.heartbeats %}
+                    {{ service.last_beat.time | timedeltaformat }}<br/>
+                    <small>{{ service.last_beat.time | datetimeformat('d MMMM, yyyy h:mm:ss a z') }}</small>
+                {% else %}
+                    <em>never</em>
+                {% endif %}
+
+            <td>
+                {% if service.heartbeats %}
+                    {{ service.last_beat.remote_name }}<br/>
+                    <small>{{ service.last_beat.remote_addr }}</small>
+                {% else %}
+                    <em>never</em>
+                {% endif %}
+
+            <td class="service-actions btn-group">
+                &nbsp;
+
     {% endfor %}
     <tr>
         <td>&nbsp;
@@ -40,28 +64,39 @@
     {{ super() }}
     <script>
 
-        $('[data-service-active-check] .heartbeat-actions').each(function() {
-            $('<a class="service-check btn btn-mini"><i class="icon-ok"></i> Check Now</a>')
-                .appendTo(this);
-        });
-        $('.service-check').click(function() {
-            var $tr = $(this).closest('.heartbeat');
-            $.post({{ url_for('check_service_api') |tojson|safe }}, {
-                id: $tr.data('serviceId')
-            });
-        })
 
         // Delete buttons
-        $('.heartbeat-actions').each(function() {
-            $('<a class="service-delete btn btn-mini btn-danger"><i class="icon-trash icon-white"></i> Delete</a>')
+        $('.service-actions').each(function() {
+
+            var $service = $(this).closest('.service')
+
+            var checkBtn = $('<a />', {
+                'class': "service-check-btn btn btn-mini",
+                html: '<i class="icon-ok"></i> Check',
+                disabled: !$service.data('canActiveCheck')
+            })
                 .appendTo(this);
+
+            $('<a />', {
+                'class': "service-delete-btn btn btn-mini btn-danger",
+                html: '<i class="icon-trash icon-white"></i> Delete'
+            })
+                .appendTo(this);
+
         });
-        $('.service-delete').click(function() {
-            var $tr = $(this).closest('.heartbeat');
-            $.post({{ url_for('delete_service_api') |tojson|safe }}, {
-                id: $tr.data('serviceId')
+
+        $('.service-check-btn').click(function() {
+            var $service = $(this).closest('.service');
+            $.post({{ url_for('check_service_api') |tojson|safe }}, {
+                id: $service.data('pk')
             });
-            $tr.fadeOut();
+        })
+        $('.service-delete-btn').click(function() {
+            var $service = $(this).closest('.service');
+            $.post({{ url_for('delete_service_api') |tojson|safe }}, {
+                id: $service.data('pk')
+            });
+            $service.fadeOut();
         });
            
 

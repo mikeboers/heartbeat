@@ -23,11 +23,14 @@ class Heartbeat(db.Model):
         next_ = all_next[0] if all_next else None
         all_prev = sorted((h for h in self.service.heartbeats if h.time < self.time), key=lambda h: h.time)
         prev = all_prev[-1] if all_prev else None
-        log.debug('siblings: %s < %s < %s' % (prev and prev.time, self.time, next_ and next_.time))
+        # log.debug('siblings: %s < %s < %s' % (prev and prev.time, self.time, next_ and next_.time))
 
         labels = []
+
         if self.http_code:
             labels.append(('http %d' % self.http_code, 'success' if self.http_code == 200 else 'important'))
+        if self.return_code is not None:
+            labels.append(('code %d' % self.return_code, 'success' if not self.return_code else 'important'))
 
         if self.service.cron_spec:
 
@@ -37,7 +40,7 @@ class Heartbeat(db.Model):
                 cron = self.service.cron_iter()
                 cron.get_prev()
                 window = datetime.datetime.utcfromtimestamp(cron.get_prev())
-                log.debug('window from now is %s' % window)
+                # log.debug('window from now is %s' % window)
                 if self.time < window:
                     labels.append(('late', 'warning'))
 
@@ -46,7 +49,7 @@ class Heartbeat(db.Model):
                 cron = self.service.cron_iter(prev.time)
                 cron.get_next()
                 window = datetime.datetime.utcfromtimestamp(cron.get_next())
-                log.debug('window from prev is %s' % window)
+                # log.debug('window from prev is %s' % window)
                 if self.time > window:
                     labels.append(('late', 'warning'))
 

@@ -1,7 +1,9 @@
 NEXT
 ----
 
-- add http_code, return_code, and description to HeartBeat
+- standardize on "id" or "pk"
+
+- add return_code and description to HeartBeat
 
 - inline editable cron_spec and url_to_monitor
 
@@ -9,9 +11,7 @@ NEXT
 - pull "cron_spec" from api calls
     - allow r'^(\d+)([hmsdw])$' -> 24h, 1h, 30m, 180s, 7d
 
-- worker should:
-    - awake every minute and check what it is supposed to check (use cron syntax)
-    - check statuses and send emails when we seem to be missing something
+- worker should send emails when we seem to be missing something
 
 - login with username/password in master configfile
     - every endpoint except "heartbeat_api" should be forced to be authed

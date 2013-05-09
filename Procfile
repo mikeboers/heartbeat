@@ -1,2 +1,2 @@
-web: gunicorn -c etc/gunicorn.py app.main:app
+web: gunicorn app.main:app
 worker: python -m app.worker
