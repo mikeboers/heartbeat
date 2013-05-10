@@ -29,6 +29,7 @@
     <thead><tr>
         <td>Status
         <td>Time
+        <td>Description
         <td>Origin
         <td>Actions
     <tbody>
@@ -44,8 +45,13 @@
             <td>
                 {{ heartbeat.time | timedeltaformat }}<br/>
                 <small>{{ heartbeat.time | datetimeformat('d MMMM, yyyy h:mm:ss a z') }}</small>
-            <td>
 
+            <td style="max-width: 400px">
+                {% if heartbeat.description %}
+                    <p style="font-family: monospace; white-space: pre-wrap"><small>{{ heartbeat.description }}</small>
+                {% endif %}
+
+            <td>
                 {{ heartbeat.remote_name }}<br/>
                 <small>{{ heartbeat.remote_addr }}</small>
 
@@ -68,7 +74,12 @@
 <p>Copy the following command into the end of your script to create
    a heartbeat here.
 </p>
-<input id="curl" class="input-block-level" type="text" value='curl -Fname="{{ service.name }}" -Freturn_code="$?" {{ request.url_root }}api/beat' />
+<input
+    id="curl"
+    class="input-block-level"
+    type="text"
+    value='curl -Fname="{{ service.name }}" -Fdescription="" -Freturn_code="$?" {{ request.url_root }}api/beat'
+/>
 
 
 {% endblock %}

@@ -39,12 +39,14 @@ def do_create_heartbeat():
         except ValueError:
             return 'bad return_code', 400
 
+
     beat = Heartbeat(
         service=service,
         time=datetime.datetime.utcnow(),
         remote_addr=remote_addr,
         remote_name=socket.gethostbyaddr(remote_addr)[0],
         return_code=return_code,
+        description=request.form.get('description'),
     )
     db.session.add(beat)
     db.session.commit()
