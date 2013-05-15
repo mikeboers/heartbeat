@@ -31,3 +31,22 @@ heroku ps:scale web=0 worker=1 --app=$WORKER
 ~~~
 
 And you're done.
+
+To bulk-add a few services:
+
+~~~
+for site in alice.com bob.com; do
+   echo "INSERT INTO services (name, cron_spec, url_to_monitor) VALUES ('$site', '*/5 * * * *', 'http://$site');" | heroku pg:psql --app=$WEB
+done
+~~~
+
+For a local install:
+
+~~~
+virtualenv --no-site-packages venv
+. venv/bin/activate
+pip install -r requirements
+./bin/migrate
+foreman start
+~~~
+
