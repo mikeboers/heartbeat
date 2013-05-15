@@ -51,6 +51,7 @@ def main():
                 service.heartbeats[config.HEARTBEATS_PER_SERVICE:] = []
 
         db.session.commit()
+        last_time = next_time
         next_time += 60
 
 

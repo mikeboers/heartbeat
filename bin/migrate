@@ -39,9 +39,8 @@ table.create(checkfirst=True, bind=engine)
 patchdir = os.path.join(root_path, 'etc', 'schema')
 for dirpath, dirnames, filenames in os.walk(patchdir, followlinks=True):
 
-    # Need to sort this since Heroku lists them backwards!
+    # Need to sort this since Heroku lists them out of order.
     for filename in sorted(filenames):
-
 
         if not filename.endswith('.py'):
             continue
