@@ -3,15 +3,14 @@ NEXT
 
 - standardize on "id" or "pk"
 
-- add return_code and description to HeartBeat
+- limit length of name, status, description, etc
 
-- inline editable cron_spec and url_to_monitor
+- worker should notify when there is a state change
+  - send emails, connect to prowl, and whatever else.
 
-
-- pull "cron_spec" from api calls
-    - allow r'^(\d+)([hmsdw])$' -> 24h, 1h, 30m, 180s, 7d
-
-- worker should send emails when we seem to be missing something
+- active DNS probe:
+  - mikeboers.com/MX should go to google apps
+  - mikeboers.com/A should go to my web server
 
 - login with username/password in master configfile
     - every endpoint except "heartbeat_api" should be forced to be authed
@@ -27,34 +26,6 @@ NEXT
     @sig_includes('name') decorator to specify that the other parameters can
      vary
 
-- sign the `curl` URLs
-    - for now can just include a v=1 along with a nonce, and sign that
-    - can ban nonces in the future if they are problematic
-
-
-IDEAS
------
-- form for specifying service name, machine it runs on, how often it is
-  expected to check in, etc.
-- creates a curl command to put at the end of periodic scripts
-
-    curl 
-        -A "heartbeat/$(hostname)" \
-        -F "name=mendel.mikeboers.com backup" \
-        -F "job=filesystem rsync" \
-        -F "period=24h" \
-        -F "allow=mendel.mikeboers.com" \
-        -F "nonce=0123456789abcdef" \
-        -F "signature=0123456789abcdef" \
-        http://heartbeat.mikeboers.com/api/beat
-
-- return_code is special and flags that it failed if != 0
-- anything extra POSTed is remembered and displayed to the user
-
-- what fields are required:
-    name
-    subname (allows for several things to contribute to one "job"; optional)
-    period (how often we expect to see this; in minutes)
-    allow (ips or hostnames to allow from; allows pattern matching; optional)
-    nonce
-    signature (hmac of urlencode(sorted(data.iteritems())) with secret_key)
+    - sign the `curl` URLs
+        - for now can just include a v=1 along with a nonce, and sign that
+        - can ban nonces in the future if they are problematic

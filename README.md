@@ -10,7 +10,7 @@ WEB=web-heartbeat-$(whoami)
 WORKER=worker-heartbeat-$(whoami)
 
 # Create a Heroku app for the web server and worker (sorry Heroku).
-heroku create --remote server $WEB
+heroku create --remote web $WEB
 heroku create --remote worker $WORKER
 heroku labs:enable user-env-compile --app=$WEB
 heroku labs:enable user-env-compile --app=$WORKER
