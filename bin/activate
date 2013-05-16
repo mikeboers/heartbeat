@@ -6,3 +6,7 @@ VENV="$ROOT/var/venv"
 . "$VENV/bin/activate"
 
 export PATH="$ROOT/bin:$PATH"
+
+if [[ -e "$ROOT/var/env.sh" ]]; then
+    . "$ROOT/var/env.sh"
+fi

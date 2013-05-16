@@ -27,13 +27,16 @@ class Service(db.Model):
 
     def _check_url(self):
 
+        description = ''
         try:
             req = requests.get(self.url_to_monitor)
             status_code = req.status_code
-        except requests.exceptions.Timeout:
-            status_code = 604 # This is a custom code for a timeout.
+        except requests.exceptions.RequestException as e:
+            status_code = 600 # This is a custom code for a timeout.
+            description = repr(e).strip()
         
-        log.debug('"%s" returned %d' % (self.url_to_monitor, status_code))
+        log.debug('"%s" returned %d: %s' % (self.url_to_monitor, status_code,
+            description or 'no description'))
 
         beat = Heartbeat(
             service=self,
@@ -41,6 +44,7 @@ class Service(db.Model):
             http_code=status_code,
             remote_addr='127.0.0.1',
             remote_name='localhost',
+            description=description,
         )
         self.heartbeats.append(beat)
 
