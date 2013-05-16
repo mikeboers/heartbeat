@@ -22,8 +22,18 @@ class Service(db.Model):
         return bool(self.url_to_monitor)
 
     def active_check(self):
-        if self.url_to_monitor:
-            self._check_url()
+        try:
+            if self.url_to_monitor:
+                self._check_url()
+        except Exception as e:
+            self.heartbeats.append(Heartbeat(
+                service=self,
+                time=datetime.utcnow(),
+                return_code=1,
+                remote_addr='127.0.0.1',
+                remote_name='localhost',
+                description=repr(e).strip(),
+            ))
 
     def _check_url(self):
 
