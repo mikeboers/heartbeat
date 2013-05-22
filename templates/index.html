@@ -1,5 +1,5 @@
-{% extends "_main.html" %}
-{% block body %}
+<%inherit file="_main.html"/>
+<%block name="main">
 
 <h3>Services</h3>
 
@@ -11,47 +11,47 @@
         <td>Last Origin
         <td>Actions
     <tbody>
-    {% for service in services %}
+    % for service in services:
         <tr class="service"
-            data-pk="{{ service.id }}"
-            data-can-active-check="{{ 'true' if service.can_active_check else 'false' }}"
-            data-heartbeat-count="{{ service.heartbeats | length }}"
+            data-pk="${ service.id }"
+            data-can-active-check="${ 'true' if service.can_active_check else 'false' }"
+            data-heartbeat-count="${ len(service.heartbeats) }"
         >
             <td>
-                {% if service.heartbeats %}
-                    {% for content, type_ in service.last_beat.labels() %}
-                        <span class="label label-{{ type_ }}">{{ content }}</span>
-                    {% endfor %}
-                {% endif %}
+                % if service.heartbeats:
+                    % for content, type_ in service.last_beat.labels():
+                        <span class="label label-${ type_ }">${ content }</span>
+                    % endfor
+                % endif
 
             <td>
-                <a href="{{ url_for('service_details', name=service.name) }}">
-                    <strong>{{ service.name }}</strong>
+                <a href="${ url_for('service_details', name=service.name) }">
+                    <strong>${ service.name }</strong>
                 </a>
 
             <td>
-                {% if service.heartbeats %}
-                    {{ service.last_beat.time | timedeltaformat }}<br/>
-                    <small>{{ service.last_beat.time | datetimeformat('d MMMM, yyyy h:mm:ss a z') }}</small>
-                {% else %}
+                % if service.heartbeats:
+                    ${timedeltaformat(service.last_beat.time)}<br/>
+                    <small>${datetimeformat(service.last_beat.time, 'd MMMM, yyyy h:mm:ss a z')}</small>
+                % else:
                     <em>never</em>
-                {% endif %}
+                % endif
 
             <td>
-                {% if service.heartbeats %}
-                    {{ service.last_beat.remote_name }}<br/>
-                    <small>{{ service.last_beat.remote_addr }}</small>
-                {% else %}
+                % if service.heartbeats:
+                    ${ service.last_beat.remote_name }<br/>
+                    <small>${ service.last_beat.remote_addr }</small>
+                % else:
                     <em>never</em>
-                {% endif %}
+                % endif
 
             <td class="service-actions btn-group">
                 &nbsp;
 
-    {% endfor %}
+    % endfor
     <tr>
         <td>&nbsp;
-        <td colspan="4"><form class="form-inline" method="POST" action="{{ url_for('create_service_api') }}">
+        <td colspan="4"><form class="form-inline" method="POST" action="${url_for('create_service_api')}">
             <input type="text" name="name" />
             <input type="submit" class="btn btn-primary" value="Create" />
         </form>
@@ -59,9 +59,8 @@
 </table>
 
 
-{% endblock %}
-{% block scripts %}
-    {{ super() }}
+</%block><%block name="scripts">
+    ${parent.scripts()}
     <script>
 
 
@@ -87,13 +86,13 @@
 
         $('.service-check-btn').click(function() {
             var $service = $(this).closest('.service');
-            $.post({{ url_for('check_service_api') |tojson|safe }}, {
+            $.post(${ url_for('check_service_api') | tojson,n }, {
                 id: $service.data('pk')
             });
         })
         $('.service-delete-btn').click(function() {
             var $service = $(this).closest('.service');
-            $.post({{ url_for('delete_service_api') |tojson|safe }}, {
+            $.post(${ url_for('delete_service_api') | tojson,n }, {
                 id: $service.data('pk')
             });
             $service.fadeOut();
@@ -101,4 +100,4 @@
            
 
     </script>
-{% endblock %}
+</%block>

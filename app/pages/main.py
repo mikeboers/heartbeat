@@ -1,6 +1,6 @@
 import datetime
 
-from flask import render_template
+from flask.ext.mako import render_template
 
 from ..main import app, db
 from ..service import Service

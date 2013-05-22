@@ -7,6 +7,8 @@ NEXT
 
 - worker should notify when there is a state change
   - send emails, connect to prowl, and whatever else.
+  - service.status(time=None) will check most recent as of the given time
+  - service.add_beat() will check the new one vs the old one as of one minute earlier
 
 - active DNS probe:
   - mikeboers.com/MX should go to google apps

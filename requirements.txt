@@ -4,6 +4,10 @@ Werkzeug==0.8.3
 
 gunicorn==0.17.4
 
+Flask-Mako==0.2
+Mako==0.8.0
+MarkupSafe==0.15
+
 SQLAlchemy==0.8.1
 Flask-SQLAlchemy==0.16
 alembic==0.5.0

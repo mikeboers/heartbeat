@@ -13,6 +13,8 @@ _plural_s = lambda n: 's' if n != 1 else ''
 @app.add_template_filter
 def timedeltaformat(delta):
 
+    if isinstance(delta, basestring):
+        return delta
     if isinstance(delta, datetime):
         delta = delta - datetime.utcnow()
     if isinstance(delta, timedelta):

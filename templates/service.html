@@ -1,26 +1,32 @@
-{% extends "_main.html" %}
-{% block body %}
+<%inherit file="/_main.html"/>
+<%block name="main">
 
 <h3>
-    <a href="/">Services</a> &raquo; {{ service.name }}
+    <a href="/">Services</a> &raquo; ${ service.name }
 </h3>
 
 <p>
     <strong>CRON Specification:</strong>
-    <code><span class="editable" data-pk="{{ service.id }}" data-name="cron_spec" data-title='E.g. "*/5 * * * *" for every 5 minutes'>
-        {{ service.cron_spec or '' }}
+    <code><span class="editable" data-pk="${ service.id }" data-name="cron_spec" data-title='E.g. "*/5 * * * *" for every 5 minutes'>
+        ${ service.cron_spec or '' }
     </span></code>
-    {% if service.cron_spec %}
+    % if service.cron_spec:
         <br/>
-        {% set cron_iter = service.cron_iter() %}
-        <small>Next heartbeats: {% for i in range(5) %}{% if i %},{% endif%}
-            {{ cron_iter.get_next() | utcfromtimestamp | timedeltaformat }}{% endfor %}</small>
-    {% endif %}
+        <% cron_iter = service.cron_iter() %>
+        <small>Next heartbeats: 
+            % for i in xrange(5):
+                % if i:
+,
+                % endif \
+                ${ cron_iter.get_next() | n, utcfromtimestamp, timedeltaformat }
+            % endfor
+        </small>
+    % endif
 
 <p>
     <strong>URL to Monitor:</strong>
-    <span class="editable" data-pk="{{ service.id }}" data-name="url_to_monitor">
-        {{ service.url_to_monitor or '' }}
+    <span class="editable" data-pk="${ service.id }" data-name="url_to_monitor">
+        ${ service.url_to_monitor or '' }
     </span>
 
 
@@ -33,39 +39,39 @@
         <td>Origin
         <td>Actions
     <tbody>
-    {% for heartbeat in service.heartbeats | sort(attribute="time", reverse=True) %}
+    % for heartbeat in sorted(service.heartbeats, key=lambda x: x.time, reverse=True):
 
 
-        <tr class="heartbeat" data-pk="{{ heartbeat.id }}">
+        <tr class="heartbeat" data-pk="${ heartbeat.id }">
             <td>
-                {% for content, type_ in heartbeat.labels() %}
-                    <span class="label label-{{ type_ }}">{{ content }}</span>
-                {% endfor %}
+                % for content, type_ in heartbeat.labels():
+                    <span class="label label-${ type_ }">${ content }</span>
+                % endfor
 
             <td>
-                {{ heartbeat.time | timedeltaformat }}<br/>
-                <small>{{ heartbeat.time | datetimeformat('d MMMM, yyyy h:mm:ss a z') }}</small>
+                ${ heartbeat.time | n,timedeltaformat }<br/>
+                <small>${datetimeformat(heartbeat.time, 'd MMMM, yyyy h:mm:ss a z')}</small>
 
             <td style="max-width: 400px">
-                {% if heartbeat.description %}
-                    <p style="font-family: monospace; white-space: pre-wrap"><small>{{ heartbeat.description }}</small>
-                {% endif %}
+                % if heartbeat.description:
+                    <p style="font-family: monospace; white-space: pre-wrap"><small>${ heartbeat.description }</small>
+                % endif
 
             <td>
-                {{ heartbeat.remote_name }}<br/>
-                <small>{{ heartbeat.remote_addr }}</small>
+                ${ heartbeat.remote_name }<br/>
+                <small>${ heartbeat.remote_addr }</small>
 
             <td class="heartbeat-actions">
                 &nbsp;
 
 
-    {% endfor %}
+    % endfor
 
-    {% if not service.heartbeats %}
+    % if not service.heartbeats:
     <tr>
         <td>&nbsp;
         <td colspan="4"><em>No heartbeats.</em>
-    {% endif %}
+    % endif
 
 </table>
 
@@ -78,13 +84,12 @@
     id="curl"
     class="input-block-level"
     type="text"
-    value='curl -Fname="{{ service.name }}" -Fdescription="" -Freturn_code="$?" {{ request.url_root }}api/beat'
+    value='curl -Fname="${ service.name }" -Fdescription="" -Freturn_code="$?" ${ request.url_root }api/beat'
 />
 
 
-{% endblock %}
-{% block scripts %}
-    {{ super() }}
+</%block><%block name="scripts">
+    ${ parent.scripts() }
     <script>
 
         // Select input contents when you click in it.
@@ -95,7 +100,7 @@
         // Editable fields.
         $('.editable').editable({
             placement: 'right',
-            url: {{ url_for('edit_service_api') |tojson|safe }},
+            url: ${ url_for('edit_service_api') |tojson,n },
             success: function(response, value) {
                 console.log('response: ', response);
             }
@@ -108,11 +113,11 @@
         });
         $('.heartbeat-delete').click(function() {
             var $tr = $(this).closest('.heartbeat');
-            $.post({{ url_for('delete_heartbeat_api') |tojson|safe }}, {
+            $.post(${ url_for('delete_heartbeat_api') |tojson,n }, {
                 id: $tr.data('pk')
             });
             $tr.fadeOut();
         })
 
     </script>
-{% endblock %}
+</%block>
