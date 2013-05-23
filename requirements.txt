@@ -8,6 +8,9 @@ Flask-Mako==0.2
 Mako==0.8.0
 MarkupSafe==0.15
 
+Flask-Mail==0.8.2
+blinker==1.2
+
 SQLAlchemy==0.8.1
 Flask-SQLAlchemy==0.16
 alembic==0.5.0

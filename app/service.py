@@ -6,8 +6,9 @@ import logging
 
 from croniter import croniter
 import requests
-
-from .main import db
+from flask.ext.mail import Message
+from flask import request
+from .main import app, db, mail
 
 log = logging.getLogger(__name__)
 
@@ -101,7 +102,16 @@ class Service(db.Model):
             self.notify(old_types, new_types)
 
     def notify(self, old_types, new_types):
-        log.info('State changed from %r to %r' % (sorted(old_types), sorted(new_types)))
+        log.info('%s state changed from %r to %r' % (self.name, sorted(old_types), sorted(new_types)))
+
+        if app.config['NOTIFY_EMAIL']:
+            msg = Message(
+                # sender="notifications@%s" % request.host.split(':')[0],
+                recipients=[app.config['NOTIFY_EMAIL']],
+                subject='Status change on "%s"' % self.name,
+                body='Status changed from %s to %s.' % (sorted(old_types), sorted(new_types)),
+            )
+            mail.send(msg)
 
 
 # Hooray for circular imports!
