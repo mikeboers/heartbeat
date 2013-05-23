@@ -1,16 +1,15 @@
 NEXT
 ----
 
-- concept of "late" should be moved to the service, not on a heartbeat
+- Get the domain name in the worker (for emails).
+
+- expand on labels to include a description for a rollover, e.g.:
+    ('stale', 'warning', 'The service expected another heartbeat after this one.')
+    ('code-1', 'error', 'The service returned a non-zero code upon exit.')
 
 - standardize on "id" or "pk"
 
 - limit length of name, status, description, etc
-
-- worker should notify when there is a state change
-  - send emails, connect to prowl, and whatever else.
-  - service.status(time=None) will check most recent as of the given time
-  - service.add_beat() will check the new one vs the old one as of one minute earlier
 
 - how to merge multiple active probes into a single heartbeat?
 
@@ -18,20 +17,3 @@ NEXT
   - mikeboers.com/MX should go to google apps
   - mikeboers.com/A should go to my web server
 
-- login with username/password in master configfile
-    - every endpoint except "heartbeat_api" should be forced to be authed
-    - OR accept any signed requests? Would need to include "_path" key in signature
-      and maybe a "_method" along with "_nonce".
-
-      def sign(data, path=None, method='POST'):
-            data = dict(data)
-            data['_path'] = request.path_info if path is None else path
-            data['_method'] = method
-            return hmac(key, '&'.join('%s=%s' % x for x in sorted(data.iteritems())))
-
-    @sig_includes('name') decorator to specify that the other parameters can
-     vary
-
-    - sign the `curl` URLs
-        - for now can just include a v=1 along with a nonce, and sign that
-        - can ban nonces in the future if they are problematic
