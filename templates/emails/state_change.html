@@ -1,17 +1,21 @@
 <!doctype html>
+<html>
 <head>
     <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css" rel="stylesheet">
+</head>
 <body>
 
-Status changed from:<br />
+<p>Status changed from:
 
 
+<p>
 % for content, type_ in old_labels:
     <span class="label label-${ type_ }">${ content }</span>
 % endfor
 
-<br />to<br />
+<p>to
 
+<p>
 % for content, type_ in new_labels:
     <span class="label label-${ type_ }">${ content }</span>
 % endfor
