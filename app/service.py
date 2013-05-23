@@ -7,6 +7,7 @@ import logging
 from croniter import croniter
 import requests
 from flask import request
+from flask.ext.mako import render_template
 from .main import app, db
 from .mail import sendmail
 
@@ -84,41 +85,50 @@ class Service(db.Model):
     @contextmanager
     def notify_context(self, old_time=None, new_time=None):
 
-        old_types = (
-            set(type_ for _, type_ in self.last_beat.labels(old_time))
+        old_labels = (
+            self.last_beat.labels(old_time)
             if self.heartbeats else
-            set()
+            []
         )
 
         yield
 
-        new_types = (
-            set(type_ for _, type_ in self.last_beat.labels(new_time))
+        new_labels = (
+            self.last_beat.labels(new_time)
             if self.heartbeats else
-            set()
+            []
         )
 
-        if old_types != new_types:
-            self.notify(old_types, new_types)
+        if old_labels != new_labels:
+            self.notify(old_labels, new_labels)
 
-    def notify(self, old_types, new_types):
-        log.info('%s state changed from %r to %r' % (self.name, sorted(old_types), sorted(new_types)))
+    def notify(self, old_labels, new_labels):
+
+        log.info('%s state changed from %r to %r' % (self.name, old_labels, new_labels))
 
         subject = 'Status change on "%s"' % self.name
-        body = 'Status changed from %s to %s.' % (sorted(old_types), sorted(new_types))
+        body = render_template('/emails/state_change.txt',
+            old_labels=old_labels,
+            new_labels=new_labels,
+        )
+        html = render_template('/emails/state_change.html',
+            old_labels=old_labels,
+            new_labels=new_labels,
+        )
 
         if app.config['NOTIFY_EMAIL']:
             sendmail(
                 recipients=[app.config['NOTIFY_EMAIL']],
                 subject=subject,
                 body=body,
+                html=html,
             )
 
         if app.config['NOTIFY_PROWL']:
             requests.post('https://api.prowlapp.com/publicapi/add', data=dict(
                 apikey=app.config['NOTIFY_PROWL'],
                 application='Heartbeat',
-                event=subject,
+                event=self.name,
                 description=body,
             ))
 
@@ -126,7 +136,7 @@ class Service(db.Model):
             requests.post('https://www.notifymyandroid.com/publicapi/notify', data=dict(
                 apikey=app.config['NOTIFY_ANDROID'],
                 application='Heartbeat',
-                event=subject,
+                event=self.name,
                 description=body,
                 priority='0',
             ))

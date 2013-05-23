@@ -9,9 +9,13 @@ NEXT
 
 - standardize on "id" or "pk"
 
+- include headers/body in the description of HTTP probes?
+
 - limit length of name, status, description, etc
 
 - how to merge multiple active probes into a single heartbeat?
+    - perhaps child heartbeats that contain details
+    - labels are merged from all children
 
 - active DNS probe:
   - mikeboers.com/MX should go to google apps

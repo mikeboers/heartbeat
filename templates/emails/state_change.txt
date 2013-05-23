@@ -1,0 +1,11 @@
+Status changed from:
+
+% for label, type_ in old_labels:
+* ${label} (${type_})
+% endfor
+
+to
+
+% for label, type_ in new_labels:
+* ${label} (${type_})
+% endfor

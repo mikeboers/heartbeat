@@ -6,7 +6,7 @@ import datetime
 
 from croniter import croniter
 
-from .main import db
+from .main import app, db
 from .service import Service
 from .heartbeat import Heartbeat
 from . import config
@@ -16,6 +16,11 @@ log = logging.getLogger(__name__)
 
 
 def main():
+    with app.app_context():
+        with app.test_request_context('/worker'):
+            _main()
+
+def _main():
 
     next_time = int(time.time() + 60) / 60 * 60
     last_time = next_time - 60
@@ -54,10 +59,6 @@ def main():
         db.session.commit()
         last_time = next_time
         next_time += 60
-
-
-
-
 
 
 
