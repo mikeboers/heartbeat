@@ -23,3 +23,5 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 NOTIFY_EMAIL = os.environ.get('NOTIFY_EMAIL')
 
 MAIL_SERVER = os.environ.get('POSTMARK_SMTP_SERVER', 'localhost')
+MAIL_USERNAME = os.environ.get('POSTMARK_API_KEY')
+MAIL_PASSWORD = os.environ.get('POSTMARK_API_KEY')
