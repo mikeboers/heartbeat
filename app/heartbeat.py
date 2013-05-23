@@ -34,24 +34,12 @@ class Heartbeat(db.Model):
 
         if self.service.cron_spec:
 
-            # This is the latest one; make sure it is within the last two
-            # periods.
-            if next_ is None:
-                cron = self.service.cron_iter(as_of)
-                cron.get_prev()
-                window = datetime.datetime.utcfromtimestamp(cron.get_prev())
-                # log.debug('window from now is %s' % window)
-                if self.time < window:
-                    labels.append(('stale', 'warning'))
-
-            # It was late if it was two periods from the previous.
-            elif prev is not None:
-                cron = self.service.cron_iter(prev.time)
-                cron.get_next()
-                window = datetime.datetime.utcfromtimestamp(cron.get_next())
-                # log.debug('window from prev is %s' % window)
-                if self.time > window:
-                    labels.append(('late', 'warning'))
+            # Check to see if the next heartbeat arrived on time.
+            cron = self.service.cron_iter(next_.time if next_ else as_of)
+            cron.get_prev()
+            window = datetime.datetime.utcfromtimestamp(cron.get_prev())
+            if self.time < window:
+                labels.append(('stale', 'warning'))
 
 
         if not labels:
