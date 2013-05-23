@@ -21,6 +21,17 @@ DATABASE_URL=$(heroku config --shell --app=$WEB | grep HEROKU_POSTGRES | cut -d=
 heroku config:set "DATABASE_URL=$DATABASE_URL" --app=$WEB
 heroku config:set "DATABASE_URL=$DATABASE_URL" --app=$WORKER
 
+# Setup credentials and notification.
+heroku config:set USERNAME=yourname PASSWORD=yourpass --app=$WEB
+heroku config:set SECRET_KEY=$(head -c 1024 /dev/urandom | md5) --app=$WEB
+
+# Setup email.
+heroku addons:add postmark:10k --app=$WEB
+heroku addons:add postmark:10k --app=$WORKER
+heroku config:set NOTIFY_EMAIL=heartbeat@mikeboers.com --app=$WEB
+heroku config:set NOTIFY_EMAIL=heartbeat@mikeboers.com --app=$WORKER
+
+
 # Deploy.
 git push web
 git push worker
