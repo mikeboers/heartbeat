@@ -1,7 +1,7 @@
 NEXT
 ----
 
-- authentication on all pages except login
+- concept of "late" should be moved to the service, not on a heartbeat
 
 - standardize on "id" or "pk"
 

@@ -13,6 +13,7 @@
             position: absolute;
             top: 1em;
             right: 1em;
+            text-align: right;
         }
     </style>
     </%block>
@@ -22,7 +23,9 @@
 
 % if session.get('user') is not None:
   <div id="auth-bar"><small>
-    Logged in as <code>${session['user']}</code>. <a href="${url_for('logout')}">Logout</a>.
+    Logged in as <strong>${session['user']}</strong>.<br />
+    Notifications emailed to <strong>${config.get('NOTIFY_EMAIL')}</strong>.<br />
+    <a href="${url_for('logout')}">Logout</a>.
   </small></div>
 % endif
 

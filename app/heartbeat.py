@@ -16,7 +16,7 @@ class Heartbeat(db.Model):
 
     service = db.relationship(Service, backref=db.backref('heartbeats', cascade="all, delete, delete-orphan"))
 
-    def labels(self):
+    def labels(self, as_of=None):
 
         # This is not the most efficient by any means.
         all_next = sorted((h for h in self.service.heartbeats if h.time > self.time), key=lambda h: h.time)
@@ -37,7 +37,7 @@ class Heartbeat(db.Model):
             # This is the latest one; make sure it is within the last two
             # periods.
             if next_ is None:
-                cron = self.service.cron_iter()
+                cron = self.service.cron_iter(as_of)
                 cron.get_prev()
                 window = datetime.datetime.utcfromtimestamp(cron.get_prev())
                 # log.debug('window from now is %s' % window)

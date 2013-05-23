@@ -1,4 +1,5 @@
 <%inherit file="/_main.html"/>
+<%! from app.auth import sign %>\
 <%block name="main">
 
 <h3>
@@ -84,7 +85,7 @@
     id="curl"
     class="input-block-level"
     type="text"
-    value='curl -Fname="${ service.name }" -Fdescription="" -Freturn_code="$?" ${ request.url_root }api/beat'
+    value='curl -Fname="${ service.name }" -Fdescription="" -Freturn_code="$?" -Fsig="${sign(name= service.name)}" ${ request.url_root }api/beat'
 />
 
 

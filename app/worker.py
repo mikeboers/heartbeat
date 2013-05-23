@@ -31,19 +31,20 @@ def main():
             continue
 
         for service in db.session.query(Service):
+            with service.notify_context(last_time, next_time):
+                if service.cron_spec and service.can_active_check:
 
-            if service.cron_spec and service.can_active_check:
+                    # See if the next time to run is within the bracket that
+                    # just passed.
+                    cron = croniter(service.cron_spec, last_time)
+                    cron_next = cron.get_next()
+                    if cron_next <= next_time:
+                        log.debug('checking "%s"...' % service.name)
+                        service.active_check()
 
-                # See if the next time to run is within the bracket that
-                # just passed.
-                cron = croniter(service.cron_spec, last_time)
-                cron_next = cron.get_next()
-                if cron_next <= next_time:
-                    log.debug('checking "%s"...' % service.name)
-                    service.active_check()
+                    else:
+                        log.debug('next check of "%s" in %ds' % (service.name, math.ceil(cron_next - now)))
 
-                else:
-                    log.debug('next check of "%s" in %ds' % (service.name, math.ceil(cron_next - now)))
 
             # Clean up excess heartbeats.
             if len(service.heartbeats) > config.HEARTBEATS_PER_SERVICE:

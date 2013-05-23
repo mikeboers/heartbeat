@@ -20,3 +20,4 @@ HEARTBEATS_PER_SERVICE = 10
 USERNAME = os.environ.get('USERNAME')
 PASSWORD = os.environ.get('PASSWORD')
 SECRET_KEY = os.environ.get('SECRET_KEY')
+NOTIFY_EMAIL = os.environ.get('NOTIFY_EMAIL')

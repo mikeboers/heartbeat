@@ -1,3 +1,4 @@
+from contextlib import contextmanager
 from datetime import datetime
 import calendar
 import time
@@ -78,6 +79,29 @@ class Service(db.Model):
     def next_expected_time(self):
         iter_ = self.cron_iter()
         return iter_ and datetime.utcfromtimestamp(iter_.get_next())
+
+    @contextmanager
+    def notify_context(self, old_time=None, new_time=None):
+
+        old_types = (
+            set(type_ for _, type_ in self.last_beat.labels(old_time))
+            if self.heartbeats else
+            set()
+        )
+
+        yield
+
+        new_types = (
+            set(type_ for _, type_ in self.last_beat.labels(new_time))
+            if self.heartbeats else
+            set()
+        )
+
+        if old_types != new_types:
+            self.notify(old_types, new_types)
+
+    def notify(self, old_types, new_types):
+        log.info('State changed from %r to %r' % (sorted(old_types), sorted(new_types)))
 
 
 # Hooray for circular imports!

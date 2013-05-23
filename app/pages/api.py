@@ -7,6 +7,7 @@ from croniter import croniter
 from flask import request, abort, redirect, url_for
 
 from ..main import app, db
+from ..auth import verify
 from ..service import Service
 from ..heartbeat import Heartbeat
 
@@ -26,6 +27,9 @@ def do_create_heartbeat():
     if not name:
         return 'missing name', 400
 
+    if app.config['SECRET_KEY'] and not verify({'name': name}, request.form.get('sig', '')):
+        return 'bad signature', 403
+
     service = db.session.query(Service).filter(Service.name == name).first()
     if not service:
         log.info('creating service %r' % name)
@@ -39,17 +43,18 @@ def do_create_heartbeat():
         except ValueError:
             return 'bad return_code', 400
 
+    with service.notify_context():
 
-    beat = Heartbeat(
-        service=service,
-        time=datetime.datetime.utcnow(),
-        remote_addr=remote_addr,
-        remote_name=socket.gethostbyaddr(remote_addr)[0],
-        return_code=return_code,
-        description=request.form.get('description'),
-    )
-    db.session.add(beat)
-    db.session.commit()
+        beat = Heartbeat(
+            service=service,
+            time=datetime.datetime.utcnow(),
+            remote_addr=remote_addr,
+            remote_name=socket.gethostbyaddr(remote_addr)[0],
+            return_code=return_code,
+            description=request.form.get('description'),
+        )
+        db.session.add(beat)
+        db.session.commit()
 
     return 'ok\n'
 

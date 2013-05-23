@@ -1,3 +1,7 @@
+from urllib import urlencode
+from urlparse import parse_qsl
+import hmac
+
 from flask import request, redirect, session, url_for, Response
 from flask.ext.mako import render_template
 
@@ -6,6 +10,18 @@ from .main import app
 
 USERNAME = app.config['USERNAME']
 PASSWORD = app.config['PASSWORD']
+SECRET_KEY = app.config['SECRET_KEY'] or ''
+
+
+def sign(data=None, **kwargs):
+    data = dict(data or {})
+    data.update(kwargs)
+    data.pop('sig', None)
+    to_sign = urlencode(sorted(data.iteritems()), True)
+    return hmac.new(SECRET_KEY, to_sign).hexdigest()
+
+def verify(data, sig):
+    return sign(data) == sig
 
 
 @app.before_request
@@ -15,7 +31,7 @@ def assert_authenticated():
         return
 
     user = session.get('user')
-    if user is None and request.endpoint not in ('login', 'logout'):
+    if user is None and request.endpoint not in ('login', 'logout', 'heartbeat_api'):
         return redirect(url_for('login'))
 
 
