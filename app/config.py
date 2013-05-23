@@ -20,7 +20,9 @@ HEARTBEATS_PER_SERVICE = 10
 USERNAME = os.environ.get('USERNAME')
 PASSWORD = os.environ.get('PASSWORD')
 SECRET_KEY = os.environ.get('SECRET_KEY')
+
 NOTIFY_EMAIL = os.environ.get('NOTIFY_EMAIL')
+NOTIFY_PROWL = os.environ.get('NOTIFY_PROWL')
 
 MAIL_SERVER = os.environ.get('MAIL_SERVER') or os.environ.get('POSTMARK_SMTP_SERVER') or 'localhost'
 MAIL_PORT = int(os.environ.get('MAIL_PORT', 25))

@@ -104,12 +104,23 @@ class Service(db.Model):
     def notify(self, old_types, new_types):
         log.info('%s state changed from %r to %r' % (self.name, sorted(old_types), sorted(new_types)))
 
+        subject = 'Status change on "%s"' % self.name
+        body = 'Status changed from %s to %s.' % (sorted(old_types), sorted(new_types))
+
         if app.config['NOTIFY_EMAIL']:
             sendmail(
                 recipients=[app.config['NOTIFY_EMAIL']],
-                subject='Status change on "%s"' % self.name,
-                body='Status changed from %s to %s.' % (sorted(old_types), sorted(new_types)),
+                subject=subject,
+                body=body,
             )
+
+        if app.config['NOTIFY_PROWL']:
+            requests.post('https://api.prowlapp.com/publicapi/add', data=dict(
+                apikey=app.config['NOTIFY_PROWL'],
+                application='Heartbeat',
+                event=subject,
+                description=body,
+            ))
 
 
 # Hooray for circular imports!

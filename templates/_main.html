@@ -24,7 +24,20 @@
 % if session.get('user') is not None:
   <div id="auth-bar"><small>
     Logged in as <strong>${session['user']}</strong>.<br />
-    Notifications emailed to <strong>${config.get('NOTIFY_EMAIL')}</strong>.<br />
+    <%
+        notify_via = [config.get('NOTIFY_EMAIL'), 'prowl' if config.get('NOTIFY_PROWL') else None]
+        notify_via = filter(None, notify_via)
+    %>\
+    % if notify_via:
+      Notifications via:
+      % for i, name in enumerate(notify_via):
+        % if i:
+;
+        % endif
+        <strong>${name}</strong>\
+      % endfor
+      <br />
+    % endif
     <a href="${url_for('logout')}">Logout</a>.
   </small></div>
 % endif
