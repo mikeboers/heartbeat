@@ -1,6 +1,8 @@
 NEXT
 ----
 
+- authentication on all pages except login
+
 - standardize on "id" or "pk"
 
 - limit length of name, status, description, etc
@@ -9,6 +11,8 @@ NEXT
   - send emails, connect to prowl, and whatever else.
   - service.status(time=None) will check most recent as of the given time
   - service.add_beat() will check the new one vs the old one as of one minute earlier
+
+- how to merge multiple active probes into a single heartbeat?
 
 - active DNS probe:
   - mikeboers.com/MX should go to google apps

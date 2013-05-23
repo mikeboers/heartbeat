@@ -19,3 +19,7 @@ def _environ_iter():
     yield '\n\nWSGI Environ:\n'
     for k, v in sorted(request.environ.iteritems()):
         yield '\t%s: %r\n' % (k, v)
+
+    yield '\n\nFlask:\n'
+    yield '\trequest.endpoint: %r\n' % request.endpoint
+

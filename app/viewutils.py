@@ -33,9 +33,9 @@ def timedeltaformat(delta):
         (seconds, 'second'),
     ]:
         if value:
-            return '%d %s%s %s' % (
+            return ('%d %s%s %s' % (
                 value, unit, _plural_s(value), '' if future else 'ago',
-            )
+            )).rstrip()
     return 'now'
 
 

@@ -24,11 +24,11 @@ app = App(__name__)
 app.config.from_object('app.config')
 app.root_path = app.config['ROOT_PATH']
 
-
 babel = Babel(app)
 db = SQLAlchemy(app)
 mako = MakoTemplates(app)
 
+from . import auth
 
 # Register models.
 from . import service

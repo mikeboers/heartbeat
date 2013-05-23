@@ -17,8 +17,8 @@
             % for i in xrange(5):
                 % if i:
 ,
-                % endif \
-                ${ cron_iter.get_next() | n, utcfromtimestamp, timedeltaformat }
+                % endif
+                ${ cron_iter.get_next() | n, utcfromtimestamp, timedeltaformat }\
             % endfor
         </small>
     % endif

@@ -1,0 +1,27 @@
+<%inherit file="_main.html"/>
+<%block name="main">
+
+<h3>Who are you?</h3>
+
+<form class="form-horizontal" method="post">
+  <div class="control-group">
+    <label class="control-label" for="username">Username</label>
+    <div class="controls">
+      <input type="text" name="username">
+    </div>
+  </div>
+  <div class="control-group">
+    <label class="control-label" for="password">Password</label>
+    <div class="controls">
+      <input type="password" name="password">
+    </div>
+  </div>
+  <div class="control-group">
+    <div class="controls">
+      <button type="submit" class="btn">Sign in</button>
+    </div>
+  </div>
+</form>
+
+
+</%block>
