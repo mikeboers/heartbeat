@@ -11,7 +11,6 @@ from flask import Flask
 from flask.ext.babel import Babel
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.mako import MakoTemplates as MakoTemplates
-from flask.ext.mail import Mail
 
 class App(Flask):
 
@@ -24,7 +23,6 @@ app = App(__name__)
 app.config.from_object('app.config')
 app.root_path = app.config['ROOT_PATH']
 
-mail = Mail(app)
 babel = Babel(app)
 db = SQLAlchemy(app)
 mako = MakoTemplates(app)
