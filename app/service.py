@@ -106,7 +106,7 @@ class Service(db.Model):
 
         if app.config['NOTIFY_EMAIL']:
             msg = Message(
-                # sender="notifications@%s" % request.host.split(':')[0],
+                sender="heartbeat@mikeboers.com", # TODO: set this.
                 recipients=[app.config['NOTIFY_EMAIL']],
                 subject='Status change on "%s"' % self.name,
                 body='Status changed from %s to %s.' % (sorted(old_types), sorted(new_types)),
