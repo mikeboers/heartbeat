@@ -42,7 +42,7 @@ class Heartbeat(db.Model):
                 window = datetime.datetime.utcfromtimestamp(cron.get_prev())
                 # log.debug('window from now is %s' % window)
                 if self.time < window:
-                    labels.append(('late', 'warning'))
+                    labels.append(('stale', 'warning'))
 
             # It was late if it was two periods from the previous.
             elif prev is not None:
