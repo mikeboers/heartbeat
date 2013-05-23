@@ -122,6 +122,15 @@ class Service(db.Model):
                 description=body,
             ))
 
+        if app.config['NOTIFY_ANDROID']:
+            requests.post('https://www.notifymyandroid.com/publicapi/notify', data=dict(
+                apikey=app.config['NOTIFY_ANDROID'],
+                application='Heartbeat',
+                event=subject,
+                description=body,
+                priority='0',
+            ))
+
 
 # Hooray for circular imports!
 from .heartbeat import Heartbeat

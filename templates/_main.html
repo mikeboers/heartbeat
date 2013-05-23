@@ -25,7 +25,11 @@
   <div id="auth-bar"><small>
     Logged in as <strong>${session['user']}</strong>.<br />
     <%
-        notify_via = [config.get('NOTIFY_EMAIL'), 'prowl' if config.get('NOTIFY_PROWL') else None]
+        notify_via = [
+          config.get('NOTIFY_EMAIL'),
+          'prowl' if config.get('NOTIFY_PROWL') else None,
+          'NMA' if config.get('NOTIFY_ANDROID') else None,
+        ]
         notify_via = filter(None, notify_via)
     %>\
     % if notify_via:
