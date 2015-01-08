@@ -10,3 +10,8 @@ fi
 if [[ ! -e "$VENV/bin/python" ]]; then
     virtualenv --no-site-packages --distribute "$VENV"
 fi
+
+. "$ROOT/bin/activate"
+pip install -U -r "$ROOT/requirements.txt"
+"$ROOT/bin/migrate"
+

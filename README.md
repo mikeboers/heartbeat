@@ -1,6 +1,34 @@
 Personal Server Heartbeats
 ==========================
 
+Setup on Own Server:
+--------------------
+
+~~~
+
+# Clone the project.
+git clone git@github.com:mikeboers/heartbeat.git
+cd heartbeat
+
+# Setup the virtualenv, requirements, and database.
+. bin/bootstrap
+
+# Create a `.env` file with sensible defaults.
+cat > .env <<EOF
+USERNAME='you'
+PASSWORD='monkey'
+SECRET_KEY='$(head -c 1024 /dev/urandom | md5)'
+NOTIFY_EMAIL='you@example.com'
+EOF
+
+# Start the process.
+foreman start
+
+~~~
+
+
+Setup on (2) Heroku Apps:
+-------------------------
 ~~~
 # Clone the project.
 git clone git@github.com:mikeboers/heartbeat.git
@@ -55,13 +83,4 @@ for site in alice.com bob.com; do
 done
 ~~~
 
-For a local install:
-
-~~~
-virtualenv --no-site-packages venv
-. venv/bin/activate
-pip install -r requirements
-./bin/migrate
-foreman start
-~~~
 

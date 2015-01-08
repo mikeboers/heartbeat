@@ -85,7 +85,15 @@
     id="curl"
     class="input-block-level"
     type="text"
-    value='curl -Fname="${ service.name }" -Fdescription="" -Freturn_code="$?" -Fsig="${sign(name= service.name)}" ${ request.url_root }api/beat'
+    value='curl -Fname="${ service.name }" -Fdescription="Script Integration" -Freturn_code="$?" -Fsig="${sign(name= service.name)}" ${ request.url_root }api/beat'
+/>
+<p>Use the following URL for GET or POST webhooks:
+</p>
+<input
+    id="webhook"
+    class="input-block-level"
+    type="text"
+    value="${ url_for('heartbeat_api', name=service.name, description="WebHook", sig=sign(name=service.name), return_code="0", _external=True) }"
 />
 
 
