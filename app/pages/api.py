@@ -23,11 +23,11 @@ def do_create_heartbeat():
     else:
         remote_addr = request.remote_addr
 
-    name = request.args.get('name')
+    name = request.values.get('name')
     if not name:
         return 'missing name', 400
 
-    if app.config['SECRET_KEY'] and not verify({'name': name}, request.args.get('sig', '')):
+    if app.config['SECRET_KEY'] and not verify({'name': name}, request.values.get('sig', '')):
         return 'bad signature', 403
 
     service = db.session.query(Service).filter(Service.name == name).first()
@@ -36,7 +36,7 @@ def do_create_heartbeat():
         service = Service(name=name)
         db.session.add(service)
 
-    return_code = request.args.get('return_code')
+    return_code = request.values.get('return_code')
     if return_code:
         try:
             return_code = int(return_code)
@@ -51,7 +51,7 @@ def do_create_heartbeat():
             remote_addr=remote_addr,
             remote_name=socket.gethostbyaddr(remote_addr)[0],
             return_code=return_code,
-            description=request.args.get('description'),
+            description=request.values.get('description'),
         )
         db.session.add(beat)
         db.session.commit()
@@ -63,7 +63,7 @@ def do_create_heartbeat():
 def do_delete_heartbeat():
 
     try:
-        id_ = int(request.args['id'])
+        id_ = int(request.form['id'])
     except KeyError:
         return 'missing id', 400
     except ValueError:
@@ -81,7 +81,7 @@ def do_delete_heartbeat():
 @app.route('/api/service/create', endpoint='create_service_api', methods=('POST', ))
 def do_create_service():
 
-    name = request.args.get('name')
+    name = request.form.get('name')
     if not name:
         abort(400)
 
@@ -98,9 +98,9 @@ def do_create_service():
 def do_edit_service():
 
     try:
-        id_ = int(request.args['pk'])
-        field = request.args['name']
-        value = request.args['value']
+        id_ = int(request.form['pk'])
+        field = request.form['name']
+        value = request.form['value']
     except ValueError:
         return 'malformed pk', 400
     except KeyError as e:
@@ -137,7 +137,7 @@ def do_edit_service():
 def do_check_service():
 
     try:
-        id_ = int(request.args['id'])
+        id_ = int(request.form['id'])
     except KeyError:
         return 'missing id', 400
     except ValueError:
@@ -159,7 +159,7 @@ def do_check_service():
 def do_delete_service():
 
     try:
-        id_ = int(request.args['id'])
+        id_ = int(request.form['id'])
     except KeyError:
         return 'missing id', 400
     except ValueError:
