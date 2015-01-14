@@ -1,3 +1,4 @@
+<%! import json %>
 <%inherit file="_main.html"/>
 <%block name="main">
 
@@ -28,7 +29,33 @@
             <td>
                 <a href="${ url_for('service_details', name=service.name) }">
                     <strong>${ service.name }</strong>
-                </a>
+                </a><br/>
+                <%
+                    sparkline = []
+                    for beat in service.last_beats(20):
+                        worst = 1
+                        for _, severity in beat.labels():
+                            worst = min(worst, {
+                                'warning': -1,
+                                'danger': -2,
+                                'important': -2,
+                                'critical': -2,
+                                'success': 1
+                            }.get(severity, 0))
+                        sparkline.append(worst)
+
+                    opts = {
+                        'type': 'tristate',
+                        'colorMap': {
+                            # These are copied from Bootstrap labels.
+                            1: '#468847',
+                            0: 'grey',
+                            -1: '#f89406',
+                            -2: '#b94a48',
+                        }
+                    }
+                %>
+                <span data-sparkline="${json.dumps(opts)|h}">${','.join(str(x) for x in sparkline)}</span>
 
             <td>
                 % if last_beat:
@@ -62,8 +89,16 @@
 
 </%block><%block name="scripts">
     ${parent.scripts()}
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-sparklines/2.1.2/jquery.sparkline.min.js"></script>
     <script>
 
+        // Sparklines
+        $('[data-sparkline]').each(function() {
+            var $this = $(this);
+            var opts = $this.data('sparkline');
+            console.log(opts);
+            $this.sparkline('html', opts);
+        })
 
         // Delete buttons
         $('.service-actions').each(function() {

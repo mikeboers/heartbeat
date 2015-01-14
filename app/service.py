@@ -59,12 +59,16 @@ class Service(db.Model):
     def heartbeat_count(self):
         return Heartbeat.query.filter(Heartbeat.service == self).count()
 
-    @property
-    def last_beat(self):
+    def last_beats(self, count=10):
         return (Heartbeat.query
             .filter(Heartbeat.service == self)
             .order_by(Heartbeat.time.desc())
-        ).first()
+        )[:count]
+
+    @property
+    def last_beat(self):
+        beats = self.last_beats(1)
+        return beats[0] if beats else None
 
     @property
     def last_time(self):
