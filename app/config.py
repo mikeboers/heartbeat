@@ -1,3 +1,4 @@
+import datetime
 import os
 
 ROOT_PATH = os.path.abspath(os.path.join(__file__, '..', '..'))
@@ -30,4 +31,6 @@ MAIL_PORT = int(os.environ.get('MAIL_PORT', 25))
 MAIL_USERNAME = os.environ.get('MAIL_USERNAME') or os.environ.get('POSTMARK_API_KEY')
 MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD') or os.environ.get('POSTMARK_API_KEY')
 MAIL_DEFAULT_SENDER = os.environ.get('MAIL_DEFAULT_SENDER') or NOTIFY_EMAIL
+
+PERMANENT_SESSION_LIFETIME = datetime.timedelta(days=20*365)
 

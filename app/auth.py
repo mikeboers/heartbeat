@@ -43,6 +43,7 @@ def handle_login():
 
     if username == USERNAME and password == PASSWORD:
         session['user'] = username
+        session.permanent = bool(request.form.get('remember_me'))
         return redirect(url_for('index'))
 
     else:
