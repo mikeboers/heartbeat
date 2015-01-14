@@ -2,6 +2,8 @@ import os
 
 ROOT_PATH = os.path.abspath(os.path.join(__file__, '..', '..'))
 
+DEBUG = bool(os.environ.get("DEBUG"))
+
 # Not the best test, but there it is.
 IS_HEROKU = os.environ.get('HOME') == '/app' and '.heroku' in os.environ.get('LIBRARY_PATH', '')
 
@@ -15,8 +17,6 @@ else:
 
 SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL', TEMPORARY_DATABASE_URI)
 
-HEARTBEATS_PER_SERVICE = 10
-
 USERNAME = os.environ.get('USERNAME')
 PASSWORD = os.environ.get('PASSWORD')
 SECRET_KEY = os.environ.get('SECRET_KEY')
@@ -29,5 +29,5 @@ MAIL_SERVER = os.environ.get('MAIL_SERVER') or os.environ.get('POSTMARK_SMTP_SER
 MAIL_PORT = int(os.environ.get('MAIL_PORT', 25))
 MAIL_USERNAME = os.environ.get('MAIL_USERNAME') or os.environ.get('POSTMARK_API_KEY')
 MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD') or os.environ.get('POSTMARK_API_KEY')
-MAIL_DEFAULT_SENDER = os.environ.get('MAIL_DEFAULT_SENDER')
+MAIL_DEFAULT_SENDER = os.environ.get('MAIL_DEFAULT_SENDER') or NOTIFY_EMAIL
 

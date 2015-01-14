@@ -12,14 +12,15 @@
         <td>Actions
     <tbody>
     % for service in services:
+        <% last_beat = service.last_beat %>
         <tr class="service"
             data-pk="${ service.id }"
             data-can-active-check="${ 'true' if service.can_active_check else 'false' }"
-            data-heartbeat-count="${ len(service.heartbeats) }"
+            data-heartbeat-count="${ service.heartbeat_count }"
         >
             <td>
-                % if service.heartbeats:
-                    % for content, type_ in service.last_beat.labels():
+                % if last_beat:
+                    % for content, type_ in last_beat.labels():
                         <span class="label label-${ type_ }">${ content }</span>
                     % endfor
                 % endif
@@ -30,17 +31,17 @@
                 </a>
 
             <td>
-                % if service.heartbeats:
-                    ${timedeltaformat(service.last_beat.time)}<br/>
-                    <small>${datetimeformat(service.last_beat.time, 'd MMMM, yyyy h:mm:ss a z')}</small>
+                % if last_beat:
+                    ${timedeltaformat(last_beat.time)}<br/>
+                    <small>${datetimeformat(last_beat.time, 'd MMMM, yyyy h:mm:ss a z')}</small>
                 % else:
                     <em>never</em>
                 % endif
 
             <td>
-                % if service.heartbeats:
-                    ${ service.last_beat.remote_name }<br/>
-                    <small>${ service.last_beat.remote_addr }</small>
+                % if last_beat:
+                    ${ last_beat.remote_name }<br/>
+                    <small>${ last_beat.remote_addr }</small>
                 % else:
                     <em>never</em>
                 % endif

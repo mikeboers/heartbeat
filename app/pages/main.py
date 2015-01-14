@@ -22,4 +22,11 @@ def do_service_details(name):
     service = db.session.query(Service).filter(Service.name == name).first()
     if not service:
         abort(404)
-    return render_template('/service.html', service=service)
+    heartbeats = (Heartbeat.query
+        .filter(Heartbeat.service == service)
+        .order_by(Heartbeat.time.desc())
+    )[:10]
+    return render_template('/service.html',
+        service=service,
+        heartbeats=heartbeats,
+    )

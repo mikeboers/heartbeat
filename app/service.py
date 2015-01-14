@@ -15,6 +15,7 @@ log = logging.getLogger(__name__)
 
 
 class Service(db.Model):
+
     __table__ = db.Table('services', db.metadata,
         autoload=True,
         autoload_with=db.engine,
@@ -29,48 +30,50 @@ class Service(db.Model):
             if self.url_to_monitor:
                 self._check_url()
         except Exception as e:
-            self.heartbeats.append(Heartbeat(
+            Heartbeat(
                 service=self,
-                time=datetime.utcnow(),
                 return_code=1,
-                remote_addr='127.0.0.1',
-                remote_name='localhost',
                 description=repr(e).strip(),
-            ))
+            )
 
     def _check_url(self):
 
-        description = ''
         try:
-            req = requests.get(self.url_to_monitor)
-            status_code = req.status_code
+            res = requests.get(self.url_to_monitor)
+            status_code = res.status_code
+            description = res.headers['status']
         except requests.exceptions.RequestException as e:
             status_code = 600 # This is a custom code for a timeout.
             description = repr(e).strip()
         
-        log.debug('"%s" returned %d: %s' % (self.url_to_monitor, status_code,
-            description or 'no description'))
+        log.debug('"%s" returned %d: %r' % (self.url_to_monitor, status_code,
+            description))
 
-        beat = Heartbeat(
+        Heartbeat(
             service=self,
-            time=datetime.utcnow(),
             http_code=status_code,
-            remote_addr='127.0.0.1',
-            remote_name='localhost',
             description=description,
         )
-        self.heartbeats.append(beat)
+
+    @property
+    def heartbeat_count(self):
+        return Heartbeat.query.filter(Heartbeat.service == self).count()
 
     @property
     def last_beat(self):
-        if not self.heartbeats:
-            return
-        return max(self.heartbeats, key=lambda h: h.time)
+        return (Heartbeat.query
+            .filter(Heartbeat.service == self)
+            .order_by(Heartbeat.time.desc())
+        ).first()
 
     @property
     def last_time(self):
         beat = self.last_beat
         return beat and beat.time
+
+    def last_labels(self, at=None):
+        beat = self.last_beat
+        return beat and beat.labels(at)
 
     def cron_iter(self, start=None):
         if isinstance(start, datetime):
@@ -84,21 +87,9 @@ class Service(db.Model):
 
     @contextmanager
     def notify_context(self, old_time=None, new_time=None):
-
-        old_labels = (
-            self.last_beat.labels(old_time)
-            if self.heartbeats else
-            []
-        )
-
+        old_labels = self.last_labels(old_time)
         yield
-
-        new_labels = (
-            self.last_beat.labels(new_time)
-            if self.heartbeats else
-            []
-        )
-
+        new_labels = self.last_labels(new_time)
         if old_labels != new_labels:
             self.notify(old_labels, new_labels)
 

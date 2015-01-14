@@ -50,12 +50,6 @@ def _main():
                     else:
                         log.debug('next check of "%s" in %ds' % (service.name, math.ceil(cron_next - now)))
 
-
-            # Clean up excess heartbeats.
-            if len(service.heartbeats) > config.HEARTBEATS_PER_SERVICE:
-                service.heartbeats.sort(key=lambda h: h.time, reverse=True)
-                service.heartbeats[config.HEARTBEATS_PER_SERVICE:] = []
-
         db.session.commit()
         last_time = next_time
         next_time += 60

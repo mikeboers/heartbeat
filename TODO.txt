@@ -1,3 +1,91 @@
+
+- each Channel (or Stream) has:
+
+    - sub-Channel(s)
+
+    - Event(s) (or Log(s) or Datum)
+        - primary fields are only:
+            - id
+            - channel_id
+            - aggregate_id (another Event that this was agregated into)
+            - time (ms since 1970)
+            - level (same as logging levels)
+            - data (JSON hash)
+
+    - InternalSource(s)
+        - is run by a worker process
+        - has a Schedule that determines (via a cron-like spec) when it should run
+        - see ExternalSource discussion about if this should even exist
+
+    - ExternalSource(s)
+        - essentially just a WebHook (GET or POST) for creating an event
+        - record the last time this happened
+        - have a cron_schedule so that we can assert it is coming in on time
+        - this would be a discreet object so that we can deprecate keys
+        - however, since we conceptually only have a single internal OR
+          external source, it doesn't nessesarily make sense to be able to have
+          multiples of them right off the bat
+
+    - EventProcessor(s)
+        - reporters (making new events in another channel)
+        - deciders (deciding the state of events)
+        - aggregators (periodically compressing the data for human consumption)
+        - schedule enforcers (making sure the external source came in on time)
+        - forwarders (to another channel, or even another server)
+
+- each channel's level is the maximum of the levels of:
+    - its child channels
+    - its latest event
+    - its sources (if they have a level)
+    - its processors (if they have a level)
+
+- we should do a more complicated, tree-like summary, but... yeah.
+
+- simpler verion:
+
+    - Event is like above.
+
+    - Channel has:
+        - a source_type, which is an entry_point. Most of these are internal
+          (e.g. HTTP request, DNS request, PING, pidfile check, file existence,
+          etc.), but "external" means that it should be satisfied via a remote
+          connection.
+        - a schedule (via a cron spec). If it is an "external" source_type, then
+          the schedule is checked to make sure data is coming in roughly
+          on schedule. Any others are driven by the schedule.
+        - an unlimited series of events.
+        - a set of EventProcessors, which have their own schedules. Those
+          schedules may have some shortcuts such as "every" or "every 100" for
+          every 1 or 100 (new from sources) events, respectively. We have a set
+          of them so that we can define different processes for different subsets
+          of the data in events, for ease of writing processors. E.g. resource
+          consumption events have several types of resources. They can modify
+          events, set their own level (?), and create aggregate events
+
+---
+
+- Define levels as the same as logging, but add OK = 15 (between INFO and DEBUG)
+- 
+
+---
+
+
+What are the ultimate goals of this project?
+- Passively receive data, e.g.: log events with severity levels which can signal
+  an error state themselves, or data events which are interpreted to reveal an
+  error state.
+- Actively aquire data, e.g.: make sure a website is up (and the return code is
+  potentially an error state), or interpret metadata from a sequence of them to
+  decide that there is a timing spike error.
+- Organize services into sites or applications. Arbitrary nesting would be neat
+  but isn't nessesary.
+
+- What needs a CRON spec?
+    - When to do an active probe.
+    - When to evaluate the recent series.
+    - When to decide that a passive heartbeat stream is out of date.
+
+
 NEXT
 ----
 
@@ -13,11 +101,22 @@ NEXT
 
 - limit length of name, status, description, etc
 
-- how to merge multiple active probes into a single heartbeat?
-    - perhaps child heartbeats that contain details
-    - labels are merged from all children
+- more types of probes:
+    √ http(s)
+        - record duration
+        - be able to check for presence of some text
+    - passive (waiting for curl)
+    - DNS lookup:
+      - mikeboers.com/MX should go to google apps
+      - mikeboers.com/A should go to my web server
 
-- active DNS probe:
-  - mikeboers.com/MX should go to google apps
-  - mikeboers.com/A should go to my web server
+
+- add Service.summary field, which is a list of `(level, label, description)` tuples.
+    - this summary field is used to determine the current state
+    - on every tick (or perhaps every cron), the highest previous level is determined,
+      and if after the tick it changes, a notification is sent
+
+- Rename Heartbeat class to Event? Then a specific subset would be "heartbeats"
+  (those which are external passive notifications that a service is running).
+
 

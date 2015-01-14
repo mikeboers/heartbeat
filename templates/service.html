@@ -40,7 +40,7 @@
         <td>Origin
         <td>Actions
     <tbody>
-    % for heartbeat in sorted(service.heartbeats, key=lambda x: x.time, reverse=True):
+    % for heartbeat in heartbeats:
 
 
         <tr class="heartbeat" data-pk="${ heartbeat.id }">
@@ -68,7 +68,7 @@
 
     % endfor
 
-    % if not service.heartbeats:
+    % if not heartbeats:
     <tr>
         <td>&nbsp;
         <td colspan="4"><em>No heartbeats.</em>
